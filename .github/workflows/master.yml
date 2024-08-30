@@ -27,10 +27,9 @@ jobs:
     - name: Set up Docker Buildx
       uses: docker/setup-buildx-action@v2
 
-    - name: Login to Docker registry
+    - name: Login to Docker registry - VENZIUNO
       uses: docker/login-action@v2
       with:
-        registry: ${{ secrets.DOCKER_REGISTRY }}  # Make sure to set this secret for your registry URL
         username: ${{ secrets.DOCKER_USERNAME }}  # Ensure this secret is created
         password: ${{ secrets.DOCKER_PASSWORD }}  # Ensure this secret is created
         
