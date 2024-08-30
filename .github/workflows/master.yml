@@ -15,9 +15,8 @@ jobs:
       - name: Login to registry pmberjaya
         uses: docker/login-action@v2
         with:
-          registry: ${{ secrets.PMBERJAYA_REGISTRY }}  # Ensure this secret is created
-          username: ${{ secrets.PMBERJAYA_USERNAME }}  # Ensure this secret is created
-          password: ${{ secrets.PMBERJAYA_PASSWORD }}  # Ensure this secret is created
+          username: ${{ secrets.VENZIUNO_USERNAME }}  # Ensure this secret is created
+          password: ${{ secrets.VENZIUNO_PASSWORD }}  # Ensure this secret is created
 
       - name: Deploy to cluster
         uses: nickgronow/kubectl@master
