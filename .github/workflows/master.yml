@@ -30,8 +30,8 @@ jobs:
     - name: Login to Docker registry - VENZIUNO
       uses: docker/login-action@v2
       with:
-        username: ${{ secrets.DOCKER_USERNAME }}  # Ensure this secret is created
-        password: ${{ secrets.DOCKER_PASSWORD }}  # Ensure this secret is created
+        username: ${{ secrets.VENZIUNO_USERNAME }}  # Ensure this secret is created
+        password: ${{ secrets.VENZIUNO_PASSWORD }}  # Ensure this secret is created
         
     - name: Build Docker image
       run: docker build -t ${{ secrets.DOCKER_USERNAME }}/${{ env.IMAGE_NAME }}:${{ env.PROJECT_BRANCH }} .
