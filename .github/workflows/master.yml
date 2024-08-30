@@ -5,6 +5,13 @@ on:
     branches:
       - master
 
+env:
+  IMAGE_NAME: ${{ github.repository }}  # Gets the repo name on GitHub
+  PROJECT_BRANCH: ${{ github.ref_name }}  # Gets the branch or tag on GitHub
+  NAMESPACES: bestindo
+  DEPLOYMENT_NAME: odoo17
+  CONTAINER_NAME: odoo17
+
 jobs:
   build:
     name: Build
@@ -25,9 +32,25 @@ jobs:
       with:
         username: ${{ secrets.VENZIUNO_USERNAME }}  # Ensure this secret is created
         password: ${{ secrets.VENZIUNO_PASSWORD }}  # Ensure this secret is created
+        
+    - name: Build Docker image
+      run: docker build -t ${{ secrets.DOCKER_HUB_USERNAME }}/${{ env.IMAGE_NAME }}:${{ env.PROJECT_BRANCH }} .
 
+    - name: Push Docker image
+      run: docker push ${{ secrets.DOCKER_HUB_USERNAME }}/${{ env.IMAGE_NAME }}:${{ env.PROJECT_BRANCH }}
+        
+  dev:
+    name: Deploy To Dev
+    environment:
+      name: dev
+    runs-on: self-hosted
+    needs: build
+    steps:
+    - name: Check out code
+      uses: actions/checkout@v3
+    
     - name: Deploy to cluster
       uses: nickgronow/kubectl@master
       with:
-        kubeconfig: ${{ secrets.K8S_CONFIG_ALPHA }}
-        command: set image --record deployment/${{ env.DEPLOYMENT_NAME }} ${{ env.CONTAINER_NAME }}=${{ secrets.PMBERJAYA_REGISTRY_IMAGE }}/${{ env.IMAGE_NAME }}/${{ env.PROJECT_BRANCH }}:${{ github.sha }} -n ${{ env.NAMESPACES }}
+        config_data: ${{ secrets.K8S_CONFIG_ALPHA }}  # Ensure this secret is created
+        args: set image --record deployment/${{ env.DEPLOYMENT_NAME }} ${{ env.CONTAINER_NAME }}=${{ secrets.PMBERJAYA_REGISTRY_IMAGE }}/${{ env.IMAGE_NAME }}/${{ env.PROJECT_BRANCH }}:${{ github.sha }} -n ${{ env.NAMESPACES }}
