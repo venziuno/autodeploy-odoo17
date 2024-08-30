@@ -6,7 +6,7 @@ on:
       - master
 
 env:
-  IMAGE_NAME: ${{ github.repository }}  # Gets the repo name on GitHub
+  IMAGE_NAME: venziuno/autodeploy-odoo17  # Gets the repo name on GitHub
   PROJECT_BRANCH: ${{ github.ref_name }}  # Gets the branch or tag on GitHub
   NAMESPACES: bestindo
   DEPLOYMENT_NAME: odoo17
