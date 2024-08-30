@@ -1,0 +1,25 @@
+name: Deploy to Kubernetes
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v2
+
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: Deploy to cluster
+        uses: bitnami/kubectl@master
+        with:
+          kubeconfig: ${{ secrets.K8S_CONFIG_ALPHA }}
+          command: set image --record deployment/${{ env.DEPLOYMENT_NAME }} ${{ env.CONTAINER_NAME }}=${{ secrets.PMBERJAYA_REGISTRY_IMAGE }}/${{ env.IMAGE_NAME }}/${{ env.PROJECT_BRANCH }}:${{ github.sha }} -n ${{ env.NAMESPACES }}
