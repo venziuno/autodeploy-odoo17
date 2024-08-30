@@ -19,7 +19,7 @@ jobs:
           password: ${{ secrets.DOCKER_PASSWORD }}
 
       - name: Deploy to cluster
-        uses: bitnami/kubectl@master
+        uses: nickgronow/kubectl@master
         with:
           kubeconfig: ${{ secrets.K8S_CONFIG_ALPHA }}
           command: set image --record deployment/${{ env.DEPLOYMENT_NAME }} ${{ env.CONTAINER_NAME }}=${{ secrets.PMBERJAYA_REGISTRY_IMAGE }}/${{ env.IMAGE_NAME }}/${{ env.PROJECT_BRANCH }}:${{ github.sha }} -n ${{ env.NAMESPACES }}
