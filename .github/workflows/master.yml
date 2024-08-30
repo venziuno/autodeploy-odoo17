@@ -6,8 +6,7 @@ on:
       - master
 
 env:
-  IMAGE_NAME: venziuno/autodeploy-odoo17  # Gets the repo name on GitHub
-  PROJECT_BRANCH: ${{ github.ref_name }}  # Gets the branch or tag on GitHub
+  IMAGE_NAME: venziuno/autodeploy-odoo17
   NAMESPACES: bestindo
   DEPLOYMENT_NAME: odoo17
   CONTAINER_NAME: odoo17
@@ -20,21 +19,18 @@ jobs:
     steps:
     - name: Check out code
       uses: actions/checkout@v3
-    
-    # - name: Set up QEMU
-    #   uses: docker/setup-qemu-action@v2
-    
-    # - name: Set up Docker Buildx
-    #   uses: docker/setup-buildx-action@v2
 
     - name: Login to Docker registry - VENZIUNO
       uses: docker/login-action@v2
       with:
-        username: ${{ secrets.VENZIUNO_USERNAME }}  # Ensure this secret is created
-        password: ${{ secrets.VENZIUNO_PASSWORD }}  # Ensure this secret is created
-        
+        username: ${{ secrets.VENZIUNO_USERNAME }}
+        password: ${{ secrets.VENZIUNO_PASSWORD }}
+
     - name: Build Docker image
-      run: docker build -t ${{ env.DOCKER_USERNAME }}/${{ env.IMAGE_NAME }}:latest .
+      run: |
+        echo "Building Docker image with name: ${{ env.IMAGE_NAME }}"
+        docker build -t ${{ env.IMAGE_NAME }}:latest .
 
     - name: Push Docker image
-      run: docker push ${{ env.DOCKER_USERNAME }}/${{ env.IMAGE_NAME }}:latest
+      run: docker push ${{ env.IMAGE_NAME }}:latest
+
