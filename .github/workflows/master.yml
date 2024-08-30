@@ -34,7 +34,7 @@ jobs:
         password: ${{ secrets.VENZIUNO_PASSWORD }}  # Ensure this secret is created
         
     - name: Build Docker image
-      run: docker build -t ${{ secrets.DOCKER_USERNAME }}/${{ env.IMAGE_NAME }}:${{ env.PROJECT_BRANCH }} .
+      run: docker build -t ${{ secrets.DOCKER_USERNAME }}/${{ env.IMAGE_NAME }}:latest .
 
     - name: Push Docker image
-      run: docker push ${{ secrets.DOCKER_USERNAME }}/${{ env.IMAGE_NAME }}:${{ env.PROJECT_BRANCH }}
+      run: docker push ${{ secrets.DOCKER_USERNAME }}/${{ env.IMAGE_NAME }}:latest
