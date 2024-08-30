@@ -6,20 +6,28 @@ on:
       - master
 
 jobs:
-  deploy:
-    runs-on: ubuntu-latest
+  build:
+    name: Build
+    runs-on: self-hosted
+
     steps:
-      - name: Check out code
-        uses: actions/checkout@v2
+    - name: Check out code
+      uses: actions/checkout@v3
+    
+    - name: Set up QEMU
+      uses: docker/setup-qemu-action@v2
+    
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v2
 
-      - name: Login to registry pmberjaya
-        uses: docker/login-action@v2
-        with:
-          username: ${{ secrets.VENZIUNO_USERNAME }}  # Ensure this secret is created
-          password: ${{ secrets.VENZIUNO_PASSWORD }}  # Ensure this secret is created
+    - name: Login to registry pmberjaya
+      uses: docker/login-action@v2
+      with:
+        username: ${{ secrets.VENZIUNO_USERNAME }}  # Ensure this secret is created
+        password: ${{ secrets.VENZIUNO_PASSWORD }}  # Ensure this secret is created
 
-      - name: Deploy to cluster
-        uses: nickgronow/kubectl@master
-        with:
-          kubeconfig: ${{ secrets.K8S_CONFIG_ALPHA }}
-          command: set image --record deployment/${{ env.DEPLOYMENT_NAME }} ${{ env.CONTAINER_NAME }}=${{ secrets.PMBERJAYA_REGISTRY_IMAGE }}/${{ env.IMAGE_NAME }}/${{ env.PROJECT_BRANCH }}:${{ github.sha }} -n ${{ env.NAMESPACES }}
+    - name: Deploy to cluster
+      uses: nickgronow/kubectl@master
+      with:
+        kubeconfig: ${{ secrets.K8S_CONFIG_ALPHA }}
+        command: set image --record deployment/${{ env.DEPLOYMENT_NAME }} ${{ env.CONTAINER_NAME }}=${{ secrets.PMBERJAYA_REGISTRY_IMAGE }}/${{ env.IMAGE_NAME }}/${{ env.PROJECT_BRANCH }}:${{ github.sha }} -n ${{ env.NAMESPACES }}
