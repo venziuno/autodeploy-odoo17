@@ -39,7 +39,7 @@ jobs:
         context: ./
         file: ./Dockerfile.${{ env.PROJECT_BRANCH }}  # Ensure the Dockerfile naming convention matches
         push: true
-        tags: docker.io/${{ secrets.DOCKER_HUB_USERNAME }}/${{ env.IMAGE_NAME }}:latest
+        tags: docker.io/${{ env.IMAGE_NAME }}/${{ env.PROJECT_BRANCH }}:latest
 
     - name: Build and push with SHA tag
       uses: docker/build-push-action@v4
@@ -47,4 +47,4 @@ jobs:
         context: ./
         file: ./Dockerfile.${{ env.PROJECT_BRANCH }}  # Ensure the Dockerfile naming convention matches
         push: true
-        tags: docker.io/${{ secrets.DOCKER_HUB_USERNAME }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
+        tags: docker.io/${{ env.IMAGE_NAME }}/${{ env.PROJECT_BRANCH }}:${{ github.sha }}
