@@ -1,5 +1,21 @@
-# Menggunakan image dasar dari Alpine Linux
-FROM alpine:latest
+FROM odoo:17.0
 
-# Menetapkan perintah yang akan dijalankan ketika container dimulai
-CMD echo "Hello, World!"
+# COPY --chown=root:root ./config /etc/odoo
+COPY --chown=root:root ./addons /mnt/extra-addons
+COPY --chown=root:root ./entrypoint.sh /entrypoint.sh
+
+USER root
+
+RUN chmod +x /entrypoint.sh \
+&& mkdir -p /mnt/extra-addons \
+&& chown -R odoo /mnt/extra-addons
+# && chown odoo /etc/odoo/odoo.conf \
+
+USER odoo
+
+VOLUME ["/var/lib/odoo", "/mnt/extra-addons"]
+
+EXPOSE 8069
+
+ENTRYPOINT ["/entrypoint.sh"]
+CMD ["odoo"]
