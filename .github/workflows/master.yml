@@ -6,7 +6,8 @@ on:
       - master
 
 env:
-  IMAGE_NAME: venziuno/autodeploy-odoo17
+  IMAGE_NAME: ${{ github.repository }}  # Gets the repo name on GitHub
+  PROJECT_BRANCH: ${{ github.ref_name }}
   NAMESPACES: bestindo
   DEPLOYMENT_NAME: odoo17
   CONTAINER_NAME: odoo17
@@ -26,17 +27,24 @@ jobs:
     - name: Set up Docker Buildx
       uses: docker/setup-buildx-action@v2
         
-    - name: Login to Docker registry - VENZIUNO
+    - name: Login to Venziuno registry
       uses: docker/login-action@v2
       with:
         username: ${{ secrets.VENZIUNO_USERNAME }}
         password: ${{ secrets.VENZIUNO_PASSWORD }}
-
-    - name: Build and push Docker image
-      uses: docker/build-push-action@v2
+    
+    - name: Build and push latest
+      uses: docker/build-push-action@v4
       with:
-        context: .
+        context: ./
+        file: ./Dockerfile.${{ env.PROJECT_BRANCH }}  # Ensure the Dockerfile naming convention matches
         push: true
-        tags: ${{ env.IMAGE_NAME }}:latest
+        tags: ${{ env.IMAGE_NAME }}/${{ env.PROJECT_BRANCH }}:latest
 
-
+    - name: Build and push with SHA tag
+      uses: docker/build-push-action@v4
+      with:
+        context: ./
+        file: ./Dockerfile.${{ env.PROJECT_BRANCH }}  # Ensure the Dockerfile naming convention matches
+        push: true
+        tags: ${{ secrets.PMBERJAYA_REGISTRY_IMAGE }}/${{ env.IMAGE_NAME }}/${{ env.PROJECT_BRANCH }}:${{ github.sha }}
