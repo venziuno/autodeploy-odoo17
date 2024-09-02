@@ -3,7 +3,7 @@ from odoo import api, fields, models
 import uuid
 from odoo.exceptions import UserError, ValidationError
 from odoo import api, fields, models, tools, _
-from validate_email import validate_email #pip install validate_email && pip install py3DNS
+# from validate_email import validate_email #pip install validate_email && pip install py3DNS
 
 class ResPartner(models.Model):
 	_inherit = 'res.partner'
