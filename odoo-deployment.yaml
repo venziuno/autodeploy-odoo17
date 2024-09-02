@@ -1,77 +1,123 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: db-deplyoment
+  name: odoo
+  namespace: kube-bestindo
 spec:
   minReadySeconds: 1
   selector:
     matchLabels:
-      app: db 
+      app: odoo
   replicas: 1
-
   template:
     metadata:
       labels:
-        app: db 
+        app: odoo
     spec:
-      containers:
-      - name: postgres
-        image: postgres:16
-        env:
-        - name: POSTGRES_USER
-          value: odoo
-        - name: POSTGRES_PASSWORD
-          value: odoo
-        - name: PGDATA
-          value: /var/lib/postgresql/data/pgdata
-        ports:
-        - containerPort: 5432
-          name: db
-
+      initContainers:
+      - name: init-permissions
+        image: busybox
+        command: ['sh', '-c', 'chmod -R 777 /var/lib/odoo/sessions /var/lib/odoo/filestore']
         volumeMounts:
-        - name: odoo-db-pvc
-          mountPath: /var/lib/postgresql/data
+        - name: odoo-sessions-pvc
+          mountPath: /var/lib/odoo/sessions
+        - name: odoo-filestore-pvc
+          mountPath: /var/lib/odoo/filestore
+      containers:
+      - name: odoo
+        image: venziuno/master:latest
+        env:
+          - name: HOST
+            value: 103.160.95.134  # PostgreSQL host
+          - name: USER
+            value: odoo17
+          - name: PASSWORD
+            value: odoo17
+        volumeMounts:
+        - name: odoo-filestore-pvc
+          mountPath: /var/lib/odoo/filestore
+        - name: odoo-sessions-pvc
+          mountPath: /var/lib/odoo/sessions
       volumes:
-      - name: odoo-db-pvc
+      - name: odoo-filestore-pvc
         persistentVolumeClaim:
-          claimName: odoo-db-pvc
+          claimName: odoo-filestore-pvc
+      - name: odoo-sessions-pvc
+        persistentVolumeClaim:
+          claimName: odoo-sessions-pvc
 
 ---
+
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: odoo-db-pvc
+  name: odoo-sessions-pvc
+  namespace: kube-bestindo
 spec:
   accessModes:
     - ReadWriteOnce
   resources:
     requests:
       storage: 5Gi
+  storageClassName: standard
 
 ---
+
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: odoo-filestore-pvc
+  namespace: kube-bestindo
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 5Gi
+  storageClassName: standard
+
+---
+
 apiVersion: v1
 kind: PersistentVolume
 metadata:
-  name: pv0001
+  name: pv-sessions
 spec:
   accessModes:
     - ReadWriteOnce
   capacity:
     storage: 5Gi
   hostPath:
-    path: /tmp/pv0001/
+    path: /tmp/odoo-sessions/
+  storageClassName: standard
 
+---
+
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv-filestore
+spec:
+  accessModes:
+    - ReadWriteOnce
+  capacity:
+    storage: 5Gi
+  hostPath:
+    path: /tmp/odoo-filestore/
+  storageClassName: standard
 
 ---
 
 apiVersion: v1
 kind: Service
 metadata:
-  name: db
+  name: odoo-service
+  namespace: kube-bestindo
 spec:
   selector:
-    app: db
+    app: odoo
   ports:
-  - name: db
-    port: 5432
+  - name: http
+    port: 8069
+    targetPort: 8069
   type: NodePort
