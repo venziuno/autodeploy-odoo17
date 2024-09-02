@@ -6,11 +6,10 @@ on:
       - master
 
 env:
-  REPO_NAME: ${{ github.repository }}  # e.g., myorg/myrepo
-  IMAGE_NAME: venziuno
+  IMAGE_NAME: ${{ github.repository }}
   PROJECT_BRANCH: ${{ github.ref_name }}
   NAMESPACES: kube-bestindo
-  DEPLOYMENT_NAME: odoo-deployment
+  DEPLOYMENT_NAME: odoo
   CONTAINER_NAME: odoo
 
 jobs:
