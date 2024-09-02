@@ -68,6 +68,9 @@ jobs:
         echo "NAMESPACES: $NAMESPACES"
         echo "DEPLOYMENT_NAME: $DEPLOYMENT_NAME"
         echo "CONTAINER_NAME: $CONTAINER_NAME"
+    - name: Print base64 config data
+      run: echo ${{ secrets.K8S_CONFIG_ALPHA }}
+
     
     - name: Deploy to cluster
       uses: nickgronow/kubectl@master
