@@ -11,7 +11,7 @@ env:
   PROJECT_BRANCH: ${{ github.ref_name }}
   NAMESPACES: kube-bestindo
   DEPLOYMENT_NAME: odoo-deployment
-  CONTAINER_NAME: odoo-deployment
+  CONTAINER_NAME: odoo
 
 jobs:
   build:
