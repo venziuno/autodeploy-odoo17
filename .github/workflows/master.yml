@@ -9,9 +9,9 @@ env:
   REPO_NAME: ${{ github.repository }}  # e.g., myorg/myrepo
   IMAGE_NAME: venziuno
   PROJECT_BRANCH: ${{ github.ref_name }}
-  NAMESPACES: bestindo
-  DEPLOYMENT_NAME: odoo17
-  CONTAINER_NAME: odoo17
+  NAMESPACES: kube-bestindo
+  DEPLOYMENT_NAME: odoo
+  CONTAINER_NAME: odoo
 
 jobs:
   build:
