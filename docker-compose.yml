@@ -1,0 +1,50 @@
+# services:
+#   web:
+#     image: odoo:17.0
+#     ports:
+#       - "8069:8069"
+#     volumes:
+#       - odoo-web-data:/var/lib/odoo
+#       - ./config:/etc/odoo
+#       - ./addons:/mnt/extra-addons
+#       - ./entrypoint.sh:/entrypoint.sh
+#     environment:
+#       - HOST=103.160.95.134
+#       - USER=odoo17
+#       - PASSWORD=odoo17
+#       - PGHOST=103.160.95.134  # PostgreSQL host
+#       - PGUSER=odoo17  # PostgreSQL user
+#       - PGPASSWORD=odoo17  # PostgreSQL password
+#       - PGPORT=5432  # PostgreSQL port
+#       - DB_NAME=odoo_bestindo    # Specify the database name Odoo should connect to
+#     command: ["/entrypoint.sh"]  # Use your custom entrypoint script
+# volumes:
+#   odoo-web-data:
+
+services:
+  web:
+    image: odoo:17.0
+    depends_on:
+      - db
+    ports:
+      - "8069:8069"
+    volumes:
+      - odoo-web-data:/var/lib/odoo
+      - ./config:/etc/odoo
+      - ./addons:/mnt/extra-addons
+    environment:
+      - HOST=db
+      - USER=odoo
+      - PASSWORD=your_postgresql_password  # Directly pass the password
+  db:
+    image: postgres:15
+    environment:
+      - POSTGRES_DB=postgres
+      - POSTGRES_PASSWORD=your_postgresql_password  # Directly pass the password
+      - POSTGRES_USER=odoo
+      - PGDATA=/var/lib/postgresql/data/pgdata
+    volumes:
+      - odoo-db-data:/var/lib/postgresql/data/pgdata
+volumes:
+  odoo-web-data:
+  odoo-db-data:

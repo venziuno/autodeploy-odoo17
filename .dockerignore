@@ -1,0 +1,6 @@
+.git
+docker-compose.yml
+odoo-deployment.yaml
+db-deployment.yaml
+setup.tsx
+Dockerfile.txt
