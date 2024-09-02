@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1"> 
+
+        <record id="roles_master" model="bp.users.roles">
+            <field name="name">Master</field>
+            <field name="is_dashboard">True</field>
+            <field name="is_delivery">True</field>
+            <field name="is_product">True</field>
+            <field name="is_promotion">True</field>
+            <field name="is_user">True</field>
+            <field name="is_transaction">True</field>
+            <field name="is_setting">True</field>
+        </record>
+
+        <record id="roles_admin" model="bp.users.roles">
+            <field name="name">Admin</field>
+            <field name="is_dashboard">True</field>
+            <field name="is_delivery">False</field>
+            <field name="is_product">True</field>
+            <field name="is_promotion">True</field>
+            <field name="is_user">False</field>
+            <field name="is_transaction">True</field>
+            <field name="is_setting">False</field>
+        </record>
+
+        <record id="roles_driver" model="bp.users.roles">
+            <field name="name">Driver</field>
+            <field name="is_dashboard">False</field>
+            <field name="is_delivery">True</field>
+            <field name="is_product">False</field>
+            <field name="is_promotion">False</field>
+            <field name="is_user">False</field>
+            <field name="is_transaction">False</field>
+            <field name="is_setting">False</field>
+        </record>
+
+    </data>
+</odoo>

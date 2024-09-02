@@ -1,0 +1,13 @@
+<!-- <templates>
+    <t t-name="GeoLocationField" owl="1">
+        <input t-ref="geoInput" type="text" readonly="1"/>
+    </t>
+</templates>
+ -->
+<odoo>
+    <templates id="geo_location_views" xml:space="preserve">
+        <t t-name="GeoLocationField" owl="1">
+            <input type="text" t-ref="geoInput" class="o_field_char o_field_widget" readonly="1"/>
+        </t>
+    </templates>
+</odoo>

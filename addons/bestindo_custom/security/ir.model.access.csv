@@ -1,0 +1,13 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_bp_promotion,bp.promotion,model_bp_promotion,,1,1,1,1
+access_bp_promotion_line,bp.promotion.line,model_bp_promotion_line,,1,1,1,1
+access_bp_member_point,bp.member.point,model_bp_member_point,,1,1,1,1
+access_bp_deposit,bp.deposit,model_bp_deposit,,1,1,1,1
+access_multi_location,multi.location,model_multi_location,,1,1,1,1
+access_product_segment,product.segment,model_product_segment,,1,1,1,1
+access_bp_product_image,bp.product.image,model_bp_product_image,,1,1,1,1
+access_bp_product_image_variant,bp.product.image.variant,model_bp_product_image_variant,,1,1,1,1
+access_bp_users_roles,bp.users.roles,model_bp_users_roles,,1,1,1,1
+
+
+

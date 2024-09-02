@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="view_bp_users_roles_tree" model="ir.ui.view">
+            <field name="name">bp.users_roles.tree</field>
+            <field name="model">bp.users.roles</field>
+            <field name="arch" type="xml">
+                <tree string="Roles" create="0">
+                    <field name="name"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="view_bp_users_roles_form" model="ir.ui.view">
+            <field name="name">bp.users.roles.form</field>
+            <field name="model">bp.users.roles</field>
+            <field name="arch" type="xml">
+                <form string="Roles" create="0">
+                    <sheet>
+                        <div class="oe_title">
+                            <label for="name" string="Roles"/>
+                            <h1><field name="name" placeholder="e.g. Admin" required="1"/></h1>
+                        </div>
+                        <group string="Authorization Menu">
+                            <group>
+                                <field name="is_dashboard"/>
+                                <field name="is_delivery"/>
+                                <field name="is_product"/>
+                                <field name="is_promotion"/>
+                            </group>
+                            <group>
+                                <field name="is_user"/>
+                                <field name="is_transaction"/>
+                                <field name="is_setting" readonly="1"/>
+                            </group>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <record id="action_bp_users_roles" model="ir.actions.act_window">
+            <field name="name">Roles</field>
+            <field name="res_model">bp.users.roles</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="view_mode">tree,form</field>
+            <field name="context">{}</field>
+        </record>
+        
+    </data>
+</odoo>

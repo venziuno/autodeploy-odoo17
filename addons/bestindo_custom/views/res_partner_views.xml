@@ -1,0 +1,266 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="view_bestindo_partner_form" model="ir.ui.view">
+            <field name="name">res.partner.form</field>
+            <field name="model">res.partner</field>
+            <field name="inherit_id" ref="base.view_partner_form"/>
+            <field name="arch" type="xml">
+                <div name="button_box" position="inside">
+                    <button class="oe_stat_button" type="object" name="action_view_history_point" groups="bestindo_custom.group_master_bestindo_custom,bestindo_custom.group_admin_bestindo_custom" icon="fa-database" invisible="user_type == 'driver'">
+                        <field string="Point" name="point_count" widget="statinfo"/>
+                    </button>
+                    <button class="oe_stat_button" type="object" name="action_view_history_deposit" groups="bestindo_custom.group_master_bestindo_custom,bestindo_custom.group_admin_bestindo_custom" icon="fa-money" invisible="user_type == 'driver'">
+                        <div class="o_form_field o_stat_info">
+                            <span class="o_stat_value">
+                                <field name="currency_id" invisible="1"/>
+                                <field name="total_deposit" widget="monetary" options="{'currency_field': 'currency_id'}" readonly="1"/>
+                            </span>
+                            <span class="o_stat_text">Deposit</span>
+                        </div>
+                    </button>
+                    <button class="oe_stat_button" type="object" name="action_view_driver_jobs" groups="bestindo_custom.group_master_bestindo_custom,bestindo_custom.group_admin_bestindo_custom" icon="fa-truck" invisible="user_type == 'customer'">
+                        <div class="o_form_field o_stat_info">
+                            <span class="o_stat_text">Jobs</span>
+                        </div>
+                    </button>
+                </div>
+                <xpath expr="//field[@name='title']" position="attributes">
+                    <attribute name="invisible">1</attribute>
+                </xpath>
+                <xpath expr="//field[@name='category_id']" position="attributes">
+                    <attribute name="invisible">1</attribute>
+                </xpath>
+                <xpath expr="//field[@name='vat']" position="attributes">
+                    <attribute name="invisible">1</attribute>
+                </xpath>
+                <xpath expr="//field[@name='website']" position="attributes">
+                    <attribute name="invisible">1</attribute>
+                </xpath>
+                <xpath expr="//field[@name='type']" position="attributes">
+                    <attribute name="invisible">1</attribute>
+                </xpath>
+                <xpath expr="//div[@class='o_address_format']" position="attributes">
+                    <attribute name="invisible">1</attribute>
+                </xpath>
+                <xpath expr="//div[@class='o_address_format']" position="after">
+                    <field name="user_type" invisible="1"/>
+                    <div class="o_address_format" style="margin-left: -40px" invisible="user_type == 'driver'">
+                        <p style="font-weight: bold">Business Address: </p>
+                        <field name="street" placeholder="Street..." class="o_address_street" readonly="type == 'contact' and parent_id"/>
+                        <!-- <field name="street2" placeholder="Street 2..." class="o_address_street" readonly="type == 'contact' and parent_id"/> -->
+                        <field name="city" placeholder="City" class="o_address_city" readonly="type == 'contact' and parent_id"/>
+                        <field name="state_id" class="o_address_state" placeholder="State" options="{'no_open': True, 'no_quick_create': True}" readonly="type == 'contact' and parent_id" context="{'country_id': country_id, 'default_country_id': country_id, 'zip': zip}"/>
+                        <field name="zip" placeholder="ZIP" class="o_address_zip" readonly="type == 'contact' and parent_id"/>
+                        <div name="partner_address_country" class="d-flex justify-content-between">
+                            <field name="country_id" placeholder="Country" class="o_address_country" options="{&quot;no_open&quot;: True, &quot;no_create&quot;: True}" readonly="type == 'contact' and parent_id"/>
+                        </div>
+                        <group>
+                            <group>
+                                <field name="partner_latitude" placeholder="Lat" string="Latitude"/>
+                            </group>
+                            <group>
+                                <field name="partner_longitude" placeholder="Long" string="Longitude"/>
+                            </group>
+                        </group>
+                        <span style="font-weight: bold" invisible="not full_address">Full Address: <field name="full_address" readonly="1"/></span>
+                        <br/><br/>
+                        <p style="font-weight: bold">Home Address: </p>
+                        <field name="street_2nd" placeholder="Street..." class="o_address_street" readonly="type == 'contact' and parent_id"/>
+                        <field name="city_2" placeholder="City" class="o_address_city" readonly="type == 'contact' and parent_id"/>
+                        <field name="state_2_id" class="o_address_state" placeholder="State" options="{'no_open': True, 'no_quick_create': True}" readonly="type == 'contact' and parent_id" context="{'country_id': country_id, 'default_country_id': country_id, 'zip': zip}"/>
+                        <field name="zip_2" placeholder="ZIP" class="o_address_zip" readonly="type == 'contact' and parent_id"/>
+                        <div name="partner_address_country" class="d-flex justify-content-between">
+                            <field name="country_2_id" placeholder="Country" class="o_address_country" options="{&quot;no_open&quot;: True, &quot;no_create&quot;: True}" readonly="type == 'contact' and parent_id"/>
+                        </div>
+                        <group>
+                            <group>
+                                <field name="partner_latitude2" placeholder="Lat" string="Latitude"/>
+                            </group>
+                            <group>
+                                <field name="partner_longitude2" placeholder="Long" string="Longitude"/>
+                            </group>
+                        </group>
+                        <span style="font-weight: bold" invisible="not full_address2">Full Address: <field name="full_address2" readonly="1"/></span>
+                    </div>
+
+                    <div class="o_address_format" style="margin-left: -40px" invisible="user_type == 'customer'">
+                        <p style="font-weight: bold">Address: </p>
+                        <field name="street" placeholder="Street..." class="o_address_street" readonly="type == 'contact' and parent_id"/>
+                        <field name="city" placeholder="City" class="o_address_city" readonly="type == 'contact' and parent_id"/>
+                        <field name="state_id" class="o_address_state" placeholder="State" options="{'no_open': True, 'no_quick_create': True}" readonly="type == 'contact' and parent_id" context="{'country_id': country_id, 'default_country_id': country_id, 'zip': zip}"/>
+                        <field name="zip" placeholder="ZIP" class="o_address_zip" readonly="type == 'contact' and parent_id"/>
+                        <div name="partner_address_country" class="d-flex justify-content-between">
+                            <field name="country_id" placeholder="Country" class="o_address_country" options="{&quot;no_open&quot;: True, &quot;no_create&quot;: True}" readonly="type == 'contact' and parent_id"/>
+                        </div>
+                        <group>
+                            <group>
+                                <field name="partner_latitude" placeholder="Lat" string="Latitude"/>
+                            </group>
+                            <group>
+                                <field name="partner_longitude" placeholder="Long" string="Longitude"/>
+                            </group>
+                        </group>
+                        <span style="font-weight: bold" invisible="not full_address">Full Address: <field name="full_address" readonly="1"/></span>
+                    </div>
+                    <field name="another_address_id" invisible="1"/>
+                </xpath>
+                <xpath expr="//label[@for='vat']" position="attributes">
+                    <attribute name="invisible">1</attribute>
+                </xpath>
+                <xpath expr="//span[@name='address_name']/b" position="replace"/>
+                <xpath expr="//field[@name='parent_id']" position="attributes">
+                    <attribute name="invisible">1</attribute>
+                </xpath>
+                <xpath expr="//field[@name='function']" position="attributes">
+                    <attribute name="invisible">1</attribute>
+                </xpath>
+                <xpath expr="//field[@name='company_type']" position="attributes">
+                    <attribute name="invisible">1</attribute>
+                </xpath>
+                <xpath expr="//page[@name='contact_addresses']" position="attributes">
+                    <attribute name="invisible">1</attribute>
+                </xpath>
+                <xpath expr="//page[@name='sales_purchases']" position="attributes">
+                    <attribute name="invisible">1</attribute>
+                </xpath>
+                <xpath expr="//page[@name='internal_notes']" position="attributes">
+                    <attribute name="string">Notes</attribute>
+                </xpath>
+                <xpath expr="//page[@name='internal_notes']" position="before">
+                    <!-- <page name="location" string="Geolocation">
+                        <separator string="Geolocation"/>
+                        <group>
+                            <field name="partner_latitude" string="Lat"/>
+                            <field name="partner_longitude" string="Long"/>
+                        </group>
+                        <field name="multi_location_ids"/>
+                    </page> -->
+                    <page name="general" string="General" invisible="user_type == 'driver'">
+                        <separator string="Product Segment"/>
+                        <field name="segment_ids" domain="[('parent_id','=',False)]" options="{&quot;no_open&quot;: True, &quot;no_create&quot;: True}" widget="many2many_tags" nolabel="1"/>
+                        <p><b>Note: </b>All products will be visible to the customer if the Segment is not filled.</p>
+                        <separator string="Customer Credit"/>
+                        <field name="payment_provider_ids" widget="many2many_tags" domain="[('state','=','enabled')]"/>
+                    </page>
+                    <page name="users" string="User" groups="bestindo_custom.group_master_bestindo_custom,bestindo_custom.group_admin_bestindo_custom" invisible="user_ids">
+                        <separator string="User"/>
+                        <group>
+                            <group>
+                                <field name="email" required="0"/>
+                                <field name="password" password="True" required="0" invisible="is_show_password == True"/>
+                                <field name="password" required="0" invisible="is_show_password == False"/>
+                            </group>
+                        </group>
+                        <field name="is_show_password" widget="boolean_toggle"/><span>Show Password</span><br/>
+                        <button name="create_users" type="object" class="oe_highlight" string="Create User" invisible="not email and not password"/>
+                    </page>
+                </xpath>
+                <xpath expr="//div[@class='oe_chatter']" position="attributes">
+                    <attribute name="invisible">1</attribute>
+                </xpath>
+            </field>
+        </record>
+    </data>
+
+    <data>
+        <record id="view_account_bestindo_partner_form" model="ir.ui.view">
+            <field name="name">account.res.partner.form</field>
+            <field name="model">res.partner</field>
+            <field name="inherit_id" ref="account.view_partner_property_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//page[@name='accounting']" position="attributes">
+                    <attribute name="invisible">1</attribute>
+                </xpath>
+                <xpath expr="//page[@name='accounting_disabled']" position="attributes">
+                    <attribute name="invisible">1</attribute>
+                </xpath>
+            </field>
+        </record>
+    </data>
+
+    <data>
+        <record id="bestindo_partner_view_buttons" model="ir.ui.view">
+            <field name="name">bp.account.res.partner.form</field>
+            <field name="model">res.partner</field>
+            <field name="inherit_id" ref="account.partner_view_buttons"/>
+            <field name="arch" type="xml">
+                <xpath expr="//button[@name='action_view_partner_invoices']" position="attributes">
+                    <attribute name="invisible">1</attribute>
+                </xpath>
+            </field>
+        </record>
+    </data>
+
+    <data>
+        <record id="view_l10n_bestindo_partner_form" model="ir.ui.view">
+            <field name="name">l10n.bp.res.partner.form</field>
+            <field name="model">res.partner</field>
+            <field name="inherit_id" ref="l10n_id_efaktur.res_partner_tax_form_view"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='l10n_id_pkp']" position="attributes">
+                    <attribute name="invisible">1</attribute>
+                </xpath>
+            </field>
+        </record>
+    </data>
+
+    <data>
+        <record id="bestindo_res_partner_view_buttons" model="ir.ui.view">
+            <field name="name">bp.res.partner.view.buttons</field>
+            <field name="model">res.partner</field>
+            <field name="inherit_id" ref="sale.res_partner_view_buttons"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='sale_order_count']" position="attributes">
+                    <attribute name="string">Transaction</attribute>
+                </xpath>
+                <xpath expr="//button[@name='action_view_sale_order']" position="attributes">
+                    <attribute name="invisible">user_type == 'driver'</attribute>
+                </xpath>
+            </field>
+        </record>
+    </data>
+
+     <data>
+        <record id="contacts.action_contacts" model="ir.actions.act_window">
+            <field name="name">Customers</field>
+            <field name="domain">[('user_type','=','customer'),('is_another_address','=',False)]</field>
+            <field name="view_mode">kanban,tree,form</field>
+        </record>
+
+        <record id="action_drivers" model="ir.actions.act_window">
+            <field name="name">Drivers</field>
+            <field name="res_model">res.partner</field>
+            <field name="view_mode">kanban,tree,form</field>
+            <field name="search_view_id" ref="base.view_res_partner_filter"/>
+            <field name="context">{'default_is_company': True,'is_driver': True}</field>
+            <field name="domain">[('user_type','=','driver'),('is_another_address','=',False)]</field>
+            <field name="help" type="html">
+              <p class="o_view_nocontent_smiling_face">
+                Create a users in your address book
+              </p><p>
+                Helps you track all activities related to your users.
+              </p>
+            </field>
+        </record>
+
+        <record id="action_drivers_view_kanban" model="ir.actions.act_window.view">
+            <field name="sequence" eval="0"/>
+            <field name="view_mode">kanban</field>
+            <field name="view_id" ref="base.res_partner_kanban_view"/>
+            <field name="act_window_id" ref="action_drivers"/>
+        </record>
+        <record id="action_drivers_view_tree" model="ir.actions.act_window.view">
+            <field name="sequence" eval="1"/>
+            <field name="view_mode">tree</field>
+            <field name="view_id" ref="base.view_partner_tree"/>
+            <field name="act_window_id" ref="action_drivers"/>
+        </record>
+        <record id="action_drivers_view_form" model="ir.actions.act_window.view">
+            <field name="sequence" eval="2"/>
+            <field name="view_mode">form</field>
+            <field name="view_id" ref="base.view_partner_form"/>
+            <field name="act_window_id" ref="action_drivers"/>
+        </record>
+    </data>
+</odoo>

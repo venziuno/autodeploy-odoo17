@@ -1,0 +1,201 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <!-- Product -->
+    <menuitem id="products_menu_bp_custom"
+        name="Products"
+        web_icon="bestindo_custom,static/description/product.png"
+        groups="bestindo_custom.group_master_bestindo_custom,bestindo_custom.group_admin_bestindo_custom"
+        sequence="3">
+        <menuitem id="products_menu_bp_customs"
+            name="Products"
+            action="sale.product_template_action"
+            sequence="10"/>
+        <menuitem id="product_variants_menu_bp_customs"
+            name="Product Variants"
+            action="product.product_normal_action_sell"
+            sequence="20"/>
+        <menuitem id="product_segment_menu_bp_customs"
+            name="Segment"
+            action="action_product_segments"
+            sequence="30"/>
+        <menuitem id="product_category_menu_bp_customs"
+            name="Categories"
+            action="product.product_category_action_form"
+            sequence="35"/>
+        <!-- <menuitem id="product_configuration_menu_bp_customs"
+            name="Configuration"
+            sequence="40">
+            <menuitem id="product_pricelists_menu_bp_customs"
+            name="Pricelists"
+            action="product.product_pricelist_action2"
+            sequence="10"/>
+        </menuitem> -->
+    </menuitem>
+
+    <!-- Dashboard -->
+    <menuitem
+        id="spreadsheet_dashboard.spreadsheet_dashboard_menu_root"
+        name="Dashboards"
+        action="all_in_one_sales_kit.action_dashboard_sale"
+        groups="bestindo_custom.group_master_bestindo_custom,bestindo_custom.group_admin_bestindo_custom"
+        web_icon="spreadsheet_dashboard,static/description/icon.png"
+        sequence="1"/>
+    <menuitem id="all_in_one_sales_kit.menu_sale_dashboard" 
+        name="Dashboard"
+        action="all_in_one_sales_kit.action_dashboard_sale"
+        parent="spreadsheet_dashboard.spreadsheet_dashboard_menu_root"
+        sequence="1"/>
+    <menuitem
+        id="spreadsheet_dashboard.spreadsheet_dashboard_menu_dashboard"
+        name="Dashboards Hide"
+        action="spreadsheet_dashboard.ir_actions_dashboard_action"
+        parent="spreadsheet_dashboard.spreadsheet_dashboard_menu_root"
+        groups="bestindo_custom.group_hide_bestindo_custom"
+        sequence="2"/>
+    <menuitem
+        id="spreadsheet_dashboard.spreadsheet_dashboard_menu_configuration"
+        name="Configuration"
+        parent="spreadsheet_dashboard.spreadsheet_dashboard_menu_root"
+        groups="bestindo_custom.group_hide_bestindo_custom"
+        sequence="150"/>
+    <menuitem id="all_in_one_sales_kit.menu_sale_dashboard" 
+        name="Dashboard"
+        action="all_in_one_sales_kit.action_dashboard_sale"
+        parent="sale.sale_menu_root" 
+        groups="bestindo_custom.group_hide_bestindo_custom"
+        sequence="-1"/>
+
+    <!-- Inventory -->
+    <menuitem id="stock.menu_stock_root"
+        name="Delivery Orders" 
+        sequence="2"
+        groups="bestindo_custom.group_master_bestindo_custom,bestindo_custom.group_driver_bestindo_custom"
+        web_icon="stock,static/description/icon.png"/>
+    <menuitem id="stock.menu_stock_warehouse_mgmt" name="Operations" parent="stock.menu_stock_root" sequence="2" groups="bestindo_custom.group_hide_bestindo_custom"/>
+    <menuitem id="stock.menu_stock_inventory_control" name="Products" parent="stock.menu_stock_root" sequence="4" groups="bestindo_custom.group_hide_bestindo_custom"/>
+    <menuitem id="stock.menu_stock_config_settings" name="Configuration" parent="stock.menu_stock_root" sequence="100" groups="bestindo_custom.group_hide_bestindo_custom"/>
+    <menuitem id="stock.menu_warehouse_report" name="Reporting" sequence="99" parent="stock.menu_stock_root" groups="bestindo_custom.group_hide_bestindo_custom"/>
+
+    <!-- Promotion -->
+    <menuitem name="Promotions"
+        id="promotion_menu_bp_custom"
+        sequence="4"
+        web_icon="bestindo_custom,static/description/promotion.png"
+        groups="bestindo_custom.group_master_bestindo_custom,bestindo_custom.group_admin_bestindo_custom">
+        <menuitem id="promotions_menu_bp_customs"
+            name="Promotions"
+            action="action_bp_promotion"
+            sequence="10"/>
+    </menuitem>
+
+    <!-- Customers -->
+    <menuitem name="Users"
+        id="contacts.menu_contacts"
+        sequence="5"
+        web_icon="contacts,static/description/icon.png"
+        groups="bestindo_custom.group_master_bestindo_custom,bestindo_custom.group_admin_bestindo_custom"/>
+    <menuitem id="contacts.res_partner_menu_contacts"
+        name="Customers"
+        action="contacts.action_contacts"
+        parent="contacts.menu_contacts"
+        sequence="2"/>
+    <menuitem id="res_partner_menu_drivers"
+        name="Drivers"
+        action="action_drivers"
+        parent="contacts.menu_contacts"
+        sequence="3"/>
+    <menuitem id="contacts.res_partner_menu_config"
+        name="Configuration"
+        parent="contacts.menu_contacts"
+        groups="bestindo_custom.group_hide_bestindo_custom"
+        sequence="2"/>
+
+    <!-- Sales -->
+    <menuitem id="sale.sale_menu_root"
+        name="Transactions"
+        web_icon="sale_management,static/description/icon.png"
+        groups="bestindo_custom.group_master_bestindo_custom,bestindo_custom.group_admin_bestindo_custom"
+        sequence="6"/>
+    <menuitem id="bp_transaction_menu"
+        name="Transactions"
+        groups="bestindo_custom.group_master_bestindo_custom,bestindo_custom.group_admin_bestindo_custom"
+        parent="sale.sale_menu_root"
+        action="bp_action_orders"
+        sequence="6"/>
+    <menuitem id="sale.product_menu_catalog"
+        name="Products"
+        parent="sale.sale_menu_root"
+        groups="bestindo_custom.group_hide_bestindo_custom"
+        sequence="30"/>
+    <menuitem id="sale.menu_sale_config"
+        parent="sale.sale_menu_root"
+        name="Configuration"
+        groups="bestindo_custom.group_hide_bestindo_custom"
+        sequence="50"/>
+    <menuitem id="sale.menu_sale_report"
+        name="Reporting"
+        parent="sale.sale_menu_root"
+        groups="bestindo_custom.group_hide_bestindo_custom"
+        sequence="40"/>
+    <menuitem id="sale.sale_order_menu"
+        name="Orders"
+        sequence="10"
+        parent="sale.sale_menu_root"
+        groups="bestindo_custom.group_hide_bestindo_custom"/>
+
+    <data>
+        <record id="sale.menu_sale_invoicing" model="ir.ui.menu" forcecreate="True">
+            <field name="groups_id" eval="[(6, 0, [])]"/>
+        </record>
+
+        <record id="sale.menu_sale_invoicing" model="ir.ui.menu">
+            <field name="name">To Invoice</field>
+            <field name="sequence">20</field>
+            <field name="parent_id" ref="sale.sale_menu_root"/>
+            <field name="groups_id" eval="[(6, 0, [ref('bestindo_custom.group_hide_bestindo_custom')])]"/>
+        </record>
+    </data>
+
+    <!-- Other Menus-->
+    <menuitem name="Discuss"
+        id="mail.menu_root_discuss"
+        action="mail.action_discuss"
+        web_icon="mail,static/description/icon.png"
+        groups="bestindo_custom.group_hide_bestindo_custom"
+        sequence="10"
+    />
+    <menuitem id="utm.menu_link_tracker_root"
+        name="Link Tracker"
+        sequence="270"
+        web_icon="utm,static/description/icon.png"
+        groups="bestindo_custom.group_hide_bestindo_custom"/>
+
+    <!-- Accounting -->
+    <menuitem name="Invoicing"
+        id="account.menu_finance"
+        groups="bestindo_custom.group_hide_bestindo_custom"
+        web_icon="account,static/description/icon.png"
+        sequence="55"/>
+
+    <!-- Setting -->
+    <menuitem id="bestindo_settings_menu_root"
+        name="Settings"
+        web_icon="bestindo_custom,static/description/settings.png"
+        groups="bestindo_custom.group_master_bestindo_custom"
+        sequence="7">
+        <menuitem id="company_menu_bp_customs"
+            name="Companies"
+            action="base.action_res_company_form"
+            sequence="10"/>
+        <menuitem id="user_menu_bp_customs"
+            name="Users"
+            action="base.action_res_users"
+            sequence="20"/>
+        <menuitem id="menu_bp_users_roles_customs"
+            name="Roles"
+            action="action_bp_users_roles"
+            sequence="30"/>
+    </menuitem>
+
+
+</odoo>

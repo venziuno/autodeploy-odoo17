@@ -1,0 +1,175 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="bestindo_all_in_one_sales_kit_view_order_form" model="ir.ui.view">
+            <field name="name">bp.sale.order.view.form.inherit.all.in.one.sales.kit</field>
+            <field name="model">sale.order</field>
+            <field name="inherit_id" ref="all_in_one_sales_kit.view_order_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//button[@name='%(all_in_one_sales_kit.action_select_product_pack_view_form)d']" position="attributes">
+                    <attribute name="invisible">1</attribute>
+                </xpath>
+                <xpath expr="//button[@name='action_create_versions']" position="attributes">
+                    <attribute name="invisible">1</attribute>
+                </xpath>
+                <xpath expr="//field[@name='order_line']/tree/field[@name='barcode_scan']" position="attributes">
+                    <attribute name="column_invisible">True</attribute>
+                </xpath>
+                <xpath expr="//field[@name='order_line']/tree/field[@name='product_warehouse_id']" position="attributes">
+                    <attribute name="column_invisible">True</attribute>
+                </xpath>
+                <xpath expr="//field[@name='order_line']/tree/field[@name='qty_available']" position="attributes">
+                    <attribute name="column_invisible">True</attribute>
+                </xpath>
+                <xpath expr="//field[@name='order_line']/tree/field[@name='forecast_quantity']" position="attributes">
+                    <attribute name="column_invisible">True</attribute>
+                </xpath>
+                <xpath expr="//field[@name='order_line']/tree/button[@name='action_get_product_form']" position="attributes">
+                    <attribute name="invisible">1</attribute>
+                </xpath>
+                <xpath expr="//field[@name='order_line']/tree/field[@name='order_line_image']" position="attributes">
+                    <attribute name="options">{'size': [50, 50]}</attribute>
+                </xpath>
+                <xpath expr="//tree/control/button[@name='action_add_catalog_control']" position="replace">
+                    <create name="add_product_control" string="Add a product"/>
+                </xpath>
+            </field>
+        </record>
+
+        <record id="bp_sale_order_tree" model="ir.ui.view">
+            <field name="name">bp.sale.order.tree</field>
+            <field name="model">sale.order</field>
+            <field name="inherit_id" ref="sale.sale_order_tree"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='amount_total']" position="after">
+                    <field name="state"
+                        decoration-success="state == 'done'"
+                        decoration-warning="state == 'sent'"
+                        decoration-info="state == 'sale'"
+                        decoration-danger="state == 'cancel'"
+                        widget="badge"/>
+                </xpath>
+                <xpath expr="//field[@name='user_id']" position="attributes">
+                    <attribute name="column_invisible">1</attribute>
+                </xpath>
+                <xpath expr="//field[@name='activity_ids']" position="attributes">
+                    <attribute name="column_invisible">1</attribute>
+                </xpath>
+            </field>
+        </record>
+
+        <record id="bp_view_order_form" model="ir.ui.view">
+            <field name="name">bp.sale.order.view.form.inherit</field>
+            <field name="model">sale.order</field>
+            <field name="inherit_id" ref="sale.view_order_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='state']" position="attributes">
+                    <attribute name="statusbar_visible">draft,sent,sale,done</attribute>
+                </xpath>
+                <xpath expr="//header/button[@name='action_cancel']" position="replace">
+                    <button name="action_cancel" type="object" string="Cancel" groups="bestindo_custom.group_master_bestindo_custom,bestindo_custom.group_admin_bestindo_custom" invisible="state not in ['draft', 'sent','sale','waiting_for_approval']" data-hotkey="z"/>
+                </xpath>
+                <xpath expr="//button[@name='action_preview_sale_order']" position="attributes">
+                    <attribute name="invisible">1</attribute>
+                </xpath>
+                <xpath expr="//button[@name='action_quotation_send']" position="attributes">
+                    <attribute name="invisible">1</attribute>
+                </xpath>
+                <xpath expr="//button[@id='send_by_email']" position="attributes">
+                    <attribute name="invisible">1</attribute>
+                </xpath>
+                <xpath expr="//button[@name='action_draft']" position="attributes">
+                    <attribute name="string">Set to Draft</attribute>
+                </xpath>
+                <xpath expr="//button[@name='action_quotation_send']" position="after">
+                    <button name="action_check" class="oe_highlight" type="object" string="Set to Checking" groups="bestindo_custom.group_master_bestindo_custom,bestindo_custom.group_admin_bestindo_custom" invisible="state != 'draft'"/>
+                    
+                </xpath>
+                <xpath expr="//page[@name='other_information']" position="attributes">
+                    <attribute name="invisible">1</attribute>
+                </xpath>
+                <xpath expr="//page[@name='customer_signature']" position="attributes">
+                    <attribute name="invisible">1</attribute>
+                </xpath>
+                <xpath expr="//page[@name='order_lines']" position="after">
+                    <page string="Transfer Image" name="transfer_img">
+                        <field name="transfer_img" widget="image"/>
+                    </page>
+                </xpath>
+                <xpath expr="//tree/control" position="replace">
+                </xpath>
+                <xpath expr="//field[@name='order_line']/tree//field[@name='product_id']" position="attributes">
+                    <attribute name="string">Product</attribute>
+                    <attribute name="optional">show</attribute>
+                </xpath>
+                <xpath expr="//field[@name='order_line']/tree//field[@name='product_template_id']" position="attributes">
+                    <attribute name="column_invisible">True</attribute>
+                </xpath>
+                <xpath expr="//field[@name='order_line']/tree//field[@name='tax_id']" position="attributes">
+                    <attribute name="column_invisible">True</attribute>
+                </xpath>
+                <xpath expr="//field[@name='order_line']/tree//field[@name='name']" position="attributes">
+                    <attribute name="column_invisible">True</attribute>
+                </xpath>
+                <xpath expr="//field[@name='order_line']/tree//field[@name='qty_invoiced']" position="attributes">
+                    <attribute name="column_invisible">True</attribute>
+                </xpath>
+                <xpath expr="//field[@name='order_line']/tree//field[@name='customer_lead']" position="attributes">
+                    <attribute name="column_invisible">True</attribute>
+                </xpath>
+                <xpath expr="//field[@name='order_line']/tree//field[@name='price_subtotal']" position="attributes">
+                    <attribute name="column_invisible">True</attribute>
+                </xpath>
+                <xpath expr="//field[@name='order_line']/tree//field[@name='price_total']" position="attributes">
+                    <attribute name="optional">show</attribute>
+                    <attribute name="column_invisible">False</attribute>
+                    <attribute name="string">Total</attribute>
+                </xpath>
+                <xpath expr="//field[@name='partner_id']" position="after">
+                    <field name="driver_id"/>
+                </xpath>
+                <xpath expr="//div[@class='oe_chatter']" position="attributes">
+                    <attribute name="invisible">1</attribute>
+                </xpath>
+            </field>
+        </record>
+
+        <record id="bp_view_order_form_with_carrier" model="ir.ui.view">
+            <field name="name">bp.delivery.sale.order.view.form.inherit</field>
+            <field name="model">sale.order</field>
+            <field name="inherit_id" ref="delivery.view_order_form_with_carrier"/>
+            <field name="arch" type="xml">
+                <xpath expr="//div[@name='so_button_below_order_lines']" position="attributes">
+                    <attribute name="invisible">1</attribute>
+                </xpath>
+            </field>
+        </record>
+
+        <record id="bp_sale_order_form_quote" model="ir.ui.view">
+            <field name="name">bp.sale.order.form.quote</field>
+            <field name="model">sale.order</field>
+            <field name="inherit_id" ref="sale_management.sale_order_form_quote"/>
+            <field name="arch" type="xml">
+                <xpath expr="//page[@name='optional_products']" position="attributes">
+                    <attribute name="invisible">1</attribute>
+                </xpath>
+            </field>
+        </record>
+
+        <record id="bp_action_orders" model="ir.actions.act_window">
+        <field name="name">Transaction</field>
+        <field name="res_model">sale.order</field>
+        <field name="view_mode">tree,kanban,form,calendar,pivot,graph</field>
+        <field name="search_view_id" ref="sale.sale_order_view_search_inherit_sale"/>
+        <field name="context">{'disable_cancel_warning':True}</field>
+        <field name="domain">[]</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create a new Transaction, the first step of a new sale!
+            </p><p>
+                Once the Transaction is confirmed, it becomes a sales order.<br/> You will be able to create an invoice and collect the payment.
+            </p>
+        </field>
+    </record>
+    </data>
+</odoo>

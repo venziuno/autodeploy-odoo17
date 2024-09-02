@@ -1,0 +1,345 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- Product Template -->
+        <record id="sale.product_template_action" model="ir.actions.act_window">
+            <field name="view_mode">kanban,tree,form</field>
+        </record>
+
+        <record id="bestindo_account_product_template_form_view" model="ir.ui.view">
+            <field name="name">bp.account.product.template.form</field>
+            <field name="model">product.template</field>
+            <field name="inherit_id" ref="account.product_template_form_view"/>
+            <field name="arch" type="xml">
+                <xpath expr="//page[@name='invoicing']" position="attributes">
+                    <attribute name="invisible">1</attribute>
+                </xpath>
+            </field>
+        </record>
+
+        <record id="bestindo_product_template_form_view" model="ir.ui.view">
+            <field name="name">bp.product.template.form</field>
+            <field name="model">product.template</field>
+            <field name="inherit_id" ref="product.product_template_form_view"/>
+            <field name="arch" type="xml">
+                <xpath expr="//button[@name='action_open_label_layout']" position="attributes">
+                    <attribute name="invisible">1</attribute>
+                </xpath>
+                <xpath expr="//button[@name='open_pricelist_rules']" position="attributes">
+                    <attribute name="invisible">1</attribute>
+                </xpath>
+                <xpath expr="//button[@name='action_open_documents']" position="attributes">
+                    <attribute name="invisible">1</attribute>
+                </xpath>
+                <xpath expr="//div[@name='options']" position="attributes">
+                    <attribute name="invisible">1</attribute>
+                </xpath>
+                <xpath expr="//page[@name='general_information']" position="attributes">
+                    <attribute name="invisible">1</attribute>
+                </xpath>
+                <xpath expr="//page[@name='general_information']" position="before">
+                    <page string="General" name="bp_general">
+                        <group>
+                            <group>
+                                <field name="detailed_type" readonly="1"/>
+                                <field name="list_price" string="Product Price"/>
+                                <field name="point_type"/>
+                                <field name="flat_point" invisible="point_type != 'flat'"/>
+                                <field name="percent_point" invisible="point_type != 'percent'"/>
+                            </group>
+                            <group>
+                                <field name="segment_ids" widget="many2many_tags" required="1"/>
+                                <field name="categ_id" string="Category" required="1"/>
+                                <field name="uom_id"/>
+                            </group>
+                            <group string="Specification"/>
+                            <field name="description" placeholder="Specification..."/>
+                        </group>
+                    </page>
+                    <page string="Images" name="bp_images">
+                        <separator string="Image"/>
+                        <field name="product_image_ids" widget="kanban" string="Images">
+                            <kanban create="0">
+                                <templates>
+                                    <t t-name="kanban-box">
+                                        <div class="o_kanban_image" style="width: 300px; height: 300px; border: 0px solid white; display: flex; align-items: center; justify-content: center;">
+                                            <img alt="Image" t-att-src="kanban_image('bp.product.image', 'image', record.id.raw_value)" style="width: 100%; height: 100%"/>
+                                        </div>
+                                        <button name="unlink" type="object" class="fa fa-trash"/>
+                                    </t>
+                                </templates>
+                            </kanban>
+                            <form string="Upload Image">
+                                <sheet>
+                                    <group>
+                                        <field name="image" widget="image"/>
+                                    </group>
+                                </sheet>
+                            </form>
+                        </field>
+                        <field name="upload_product_image_ids" widget="many2many_binary" string="Images" nolabel="1" context="{'upload_tiktok_image': True}"/>
+                    </page>
+                </xpath>
+                <xpath expr="//page[@name='sales']" position="attributes">
+                    <attribute name="invisible">1</attribute>
+                </xpath>
+                <xpath expr="//page[@name='purchase']" position="attributes">
+                    <attribute name="invisible">1</attribute>
+                </xpath>
+                <xpath expr="//page[@name='inventory']" position="attributes">
+                    <attribute name="invisible">1</attribute>
+                </xpath>
+                <xpath expr="//div[@class='oe_chatter']" position="attributes">
+                    <attribute name="invisible">1</attribute>
+                </xpath>
+            </field>
+        </record>
+
+        <record id="bestindo_product_template_only_form_view" model="ir.ui.view">
+            <field name="name">bp.product.template.only.form</field>
+            <field name="model">product.template</field>
+            <field name="inherit_id" ref="product.product_template_only_form_view"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='default_code']" position="attributes">
+                    <attribute name="invisible">1</attribute>
+                </xpath>
+                <xpath expr="//field[@name='barcode']" position="attributes">
+                    <attribute name="invisible">1</attribute>
+                </xpath>
+            </field>
+        </record>
+
+        <record id="bestindo_product_template_tree_view" model="ir.ui.view">
+            <field name="name">bp.product.template.product.tree</field>
+            <field name="model">product.template</field>
+            <field name="inherit_id" ref="product.product_template_tree_view"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='default_code']" position="attributes">
+                    <attribute name="column_invisible">True</attribute>
+                </xpath>
+                <xpath expr="//field[@name='product_tag_ids']" position="attributes">
+                    <attribute name="column_invisible">True</attribute>
+                </xpath>
+                <xpath expr="//field[@name='standard_price']" position="attributes">
+                    <attribute name="column_invisible">True</attribute>
+                </xpath>
+                <xpath expr="//field[@name='list_price']" position="after">
+                    <field name="segment_ids" widget="many2many_tags"/>
+                    <field name="categ_id"/>
+                </xpath>
+            </field>
+        </record>
+
+        <record id="bestindo_view_stock_product_template_tree" model="ir.ui.view">
+            <field name="name">bp.product.template.stock.tree.inherit</field>
+            <field name="model">product.template</field>
+            <field name="inherit_id" ref="stock.view_stock_product_template_tree"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='qty_available']" position="attributes">
+                    <attribute name="column_invisible">True</attribute>
+                </xpath>
+                <xpath expr="//field[@name='virtual_available']" position="attributes">
+                    <attribute name="column_invisible">True</attribute>
+                </xpath>
+            </field>
+        </record>
+
+        <record id="bestindo_product_template_search_view" model="ir.ui.view">
+            <field name="name">bp.product.template.search</field>
+            <field name="model">product.template</field>
+            <field name="inherit_id" ref="product.product_template_search_view"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='categ_id']" position="after">
+                    <field name="segment_ids" filter_domain="[('segment_ids', '=', raw_value)]"/>
+                </xpath>
+            </field>
+        </record>
+
+        <record id="bestindo_product_template_form_view_procurement_button" model="ir.ui.view">
+            <field name="name">bp.product.template.form.view.procurement.button</field>
+            <field name="model">product.template</field>
+            <field name="inherit_id" ref="stock.product_template_form_view_procurement_button"/>
+            <field name="arch" type="xml">
+                <xpath expr="//button[@name=%(stock.action_product_replenish)d]" position="attributes">
+                    <attribute name="invisible">1</attribute>
+                </xpath>
+            </field>
+        </record>
+
+        <!-- Product Variant -->
+        <record id="product.product_normal_action_sell" model="ir.actions.act_window">
+            <field name="view_id" ref="product.product_kanban_view"/>
+            <field name="view_mode">kanban,tree,form</field>
+        </record>
+
+        <record id="bestindo_product_normal_form_view" model="ir.ui.view">
+            <field name="name">bp.product.product.view.form.inherit.all.in.one.sales.kit</field>
+            <field name="model">product.product</field>
+            <field name="inherit_id" ref="all_in_one_sales_kit.product_normal_form_view"/>
+            <field name="arch" type="xml">
+                <xpath expr="//page[@name='previous_sale_history']" position="attributes">
+                    <attribute name="invisible">1</attribute>
+                </xpath>
+            </field>
+        </record>
+
+        <record id="bestindo_product_product_tree_view" model="ir.ui.view">
+            <field name="name">bp.product.product.tree</field>
+            <field name="model">product.product</field>
+            <field name="inherit_id" ref="product.product_product_tree_view"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='default_code']" position="attributes">
+                    <attribute name="column_invisible">True</attribute>
+                </xpath>
+                <xpath expr="//field[@name='product_tag_ids']" position="attributes">
+                    <attribute name="column_invisible">True</attribute>
+                </xpath>
+                <xpath expr="//field[@name='standard_price']" position="attributes">
+                    <attribute name="column_invisible">True</attribute>
+                </xpath>
+                <xpath expr="//field[@name='lst_price']" position="after">
+                    <field name="segment_ids" widget="many2many_tags"/>
+                    <field name="categ_id"/>
+                </xpath>
+            </field>
+        </record>
+
+        <record id="bestindo_view_stock_product_tree" model="ir.ui.view">
+            <field name="name">bp.product.stock.tree.inherit</field>
+            <field name="model">product.product</field>
+            <field name="inherit_id" ref="stock.view_stock_product_tree"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='qty_available']" position="attributes">
+                    <attribute name="column_invisible">True</attribute>
+                </xpath>
+                <xpath expr="//field[@name='virtual_available']" position="attributes">
+                    <attribute name="column_invisible">True</attribute>
+                </xpath>
+            </field>
+        </record>
+
+        <record id="bestindo_product_form_view_procurement_button" model="ir.ui.view">
+            <field name="name">bp.product.form.view.procurement.button</field>
+            <field name="model">product.product</field>
+            <field name="inherit_id" ref="stock.product_form_view_procurement_button"/>
+            <field name="arch" type="xml">
+                <xpath expr="//button[@name=%(stock.action_product_replenish)d]" position="attributes">
+                    <attribute name="invisible">1</attribute>
+                </xpath>
+            </field>
+        </record>
+
+        <!-- Category -->
+        <record id="product.product_category_action_form" model="ir.actions.act_window">
+            <field name="name">Categories</field>
+        </record>
+
+        <record id="bestindo_product_category_form_view" model="ir.ui.view">
+            <field name="name">bp.product.category.form</field>
+            <field name="model">product.category</field>
+            <field name="inherit_id" ref="product.product_category_form_view"/>
+            <field name="arch" type="xml">
+                <xpath expr="//label[@for='name']" position="attributes">
+                    <attribute name="string">Name</attribute>
+                </xpath>
+                <xpath expr="//field[@name='parent_id']" position="attributes">
+                    <attribute name="string">Segment</attribute>
+                    <attribute name="invisible">1</attribute>
+                    <attribute name="domain">[('parent_id','=',False)]</attribute>
+                </xpath>
+            </field>
+        </record>
+
+        <record id="bestindo_product_category_list_view" model="ir.ui.view">
+            <field name="name">bp.product.category.list</field>
+            <field name="model">product.category</field>
+            <field name="inherit_id" ref="product.product_category_list_view"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='display_name']" position="attributes">
+                    <attribute name="string">Category</attribute>
+                </xpath>
+            </field>
+        </record>
+
+        <record id="bestindo_product_category_stock_form_view_inherit" model="ir.ui.view">
+            <field name="name">bp.product.category.stock.form</field>
+            <field name="model">product.category</field>
+            <field name="inherit_id" ref="stock.product_category_form_view_inherit"/>
+            <field name="arch" type="xml">
+                <xpath expr="//group[@name='logistics']" position="attributes">
+                    <attribute name="invisible">1</attribute>
+                </xpath>
+            </field>
+        </record>
+
+        <record id="bestindo_view_category_property_stock_account_form_stock" model="ir.ui.view">
+            <field name="name">bp.product.category.stock.account.form</field>
+            <field name="model">product.category</field>
+            <field name="inherit_id" ref="stock_account.view_category_property_form_stock"/>
+            <field name="arch" type="xml">
+                <xpath expr="//group[2]" position="attributes">
+                    <attribute name="invisible">1</attribute>
+                </xpath>
+            </field>
+        </record>
+
+        <record id="bestindo_view_category_property_account_form" model="ir.ui.view">
+            <field name="name">bp.product.category.property.account.form.inherit</field>
+            <field name="model">product.category</field>
+            <field name="inherit_id" ref="account.view_category_property_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//group[@name='account_property']" position="attributes">
+                    <attribute name="invisible">1</attribute>
+                </xpath>
+            </field>
+        </record>
+
+        <record id="product_segments_form" model="ir.ui.view">
+            <field name="name">product.segment.form</field>
+            <field name="model">product.segment</field>
+            <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button class="oe_stat_button"
+                            name="%(product.product_template_action_all)d"
+                            icon="fa-th-list"
+                            type="action"
+                            context="{'search_default_segment_ids': name, 'default_segment_ids': id, 'group_expand': True}">
+                            <div class="o_field_widget o_stat_info">
+                                <span class="o_stat_value"><field name="product_count"/></span>
+                                <span class="o_stat_text"> Products</span>
+                            </div>
+                        </button>
+                    </div>
+                    <div class="oe_title">
+                        <label for="name" string="Segment"/>
+                        <h1><field name="name" placeholder="e.g. Hotel"/></h1>
+                    </div>
+                </sheet>
+            </form>
+            </field>
+        </record>
+
+        <record id="product_segments_tree" model="ir.ui.view">
+            <field name="name">product.segment.tree</field>
+            <field name="model">product.segment</field>
+            <field name="arch" type="xml">
+            <tree>
+                <field name="name" string="Segment"/>
+            </tree>
+            </field>
+        </record>
+
+        <record id="action_product_segments" model="ir.actions.act_window">
+            <field name="name">Segments</field>
+            <field name="res_model">product.segment</field>
+            <field name="view_mode">tree,form</field>
+            <field name="help" type="html">
+              <p class="o_view_nocontent_smiling_face">
+                Create a new Segment
+              </p>
+            </field>
+        </record>
+    </data>
+</odoo>

@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="0">
+        <record id="bestindo_custom.group_master_bestindo_custom" model="res.groups">
+            <field name="name">Master - Bestindo Group</field>
+        </record>
+    </data>
+    <data noupdate="0">
+        <record id="bestindo_custom.group_admin_bestindo_custom" model="res.groups">
+            <field name="name">Admin - Bestindo Group</field>
+        </record>
+    </data>
+    <data noupdate="0">
+        <record id="bestindo_custom.group_driver_bestindo_custom" model="res.groups">
+            <field name="name">Driver - Bestindo Group</field>
+        </record>
+    </data>
+    <data noupdate="0">
+        <record id="bestindo_custom.group_hide_bestindo_custom" model="res.groups">
+            <field name="name">Hide Menu - Bestindo Group</field>
+        </record>
+    </data>
+    <data noupdate="0">
+        <record id="bestindo_custom.group_apps_bestindo_custom" model="res.groups">
+            <field name="name">Apps Menu - Bestindo Group</field>
+        </record>
+    </data>
+</odoo>

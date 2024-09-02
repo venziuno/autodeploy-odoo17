@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="view_bp_member_point_tree" model="ir.ui.view">
+            <field name="name">bp.member.point.tree</field>
+            <field name="model">bp.member.point</field>
+            <field name="arch" type="xml">
+                <tree string="Member Point" create="0">
+                    <field name="date"/>
+                    <field name="partner_id"/>
+                    <field name="sale_id"/>
+                    <field name="point"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="view_bp_member_point_form" model="ir.ui.view">
+            <field name="name">bp.member.point.form</field>
+            <field name="model">bp.member.point</field>
+            <field name="arch" type="xml">
+                <form string="Member Point" create="0" edit="0">
+                    <sheet>
+                        <group>
+                            <field name="date"/>
+                            <field name="partner_id"/>
+                            <field name="sale_id"/>
+                            <field name="point"/>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <record id="action_bp_member_point" model="ir.actions.act_window">
+            <field name="name">Member Point</field>
+            <field name="res_model">bp.member.point</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="view_mode">tree,form</field>
+            <field name="context">{}</field>
+        </record>
+        
+    </data>
+</odoo>
