@@ -59,6 +59,15 @@ jobs:
     steps:
     - name: Check out code
       uses: actions/checkout@v3
+
+    - name: Print environment variables
+      run: |
+        echo "REPO_NAME: $REPO_NAME"
+        echo "IMAGE_NAME: $IMAGE_NAME"
+        echo "PROJECT_BRANCH: $PROJECT_BRANCH"
+        echo "NAMESPACES: $NAMESPACES"
+        echo "DEPLOYMENT_NAME: $DEPLOYMENT_NAME"
+        echo "CONTAINER_NAME: $CONTAINER_NAME"
     
     - name: Deploy to cluster
       uses: nickgronow/kubectl@master
