@@ -6,9 +6,9 @@ from odoo import api, fields, models, tools, _
 
 class BpDeposit(models.Model):
 	_name = 'bp.deposit'
-	__description = 'Bp Deposit'
+	_description = 'Bp Deposit'
 
-	name = fields.Char('Name')
+	name = fields.Char('Transaction')
 	partner_id = fields.Many2one('res.partner','Customer')
 	total = fields.Float('Total')
 	image = fields.Binary('Image')
@@ -17,8 +17,21 @@ class BpDeposit(models.Model):
 	state = fields.Selection([
 		('check','Check'),
 		('done','Done'),
-		('cancel','Cancel')
+		('cancel','Cancel'),
+		('used','Used')
 	], string='Status')
+	reason = fields.Char('Reason Cancel')
+	sale_id = fields.Many2one('sale.order','Sale Order')
+	payment_id = fields.Many2one('payment.provider','Payment')
+
+	@api.model
+	def default_get(self, fields):
+		result = super(BpDeposit, self).default_get(fields)
+		context = self.env.context
+		if context.get('active_model',False) == 'res.partner':
+			result['partner_id'] = context.get('active_id',False)
+		
+		return result
 
 	def action_confirm(self):
 		if self.state == 'cancel':
@@ -27,9 +40,6 @@ class BpDeposit(models.Model):
 			raise ValidationError(_('Customer harus di isi.'))
 		if not self.image:
 			raise ValidationError(_('Foto bukti transfer tidak ada.'))
-		total_deposit_now = self.partner_id.total_deposit
-		total_deposit_now += self.total
-		self.partner_id.write({'total_deposit': total_deposit_now})
 		self.state = 'done'
 		self.user_id = self.env.user.id
 
@@ -37,9 +47,8 @@ class BpDeposit(models.Model):
 		if not self.partner_id:
 			raise ValidationError(_('Customer harus di isi.'))
 		if self.state == 'done':
-			total_deposit_now = self.partner_id.total_deposit
-			total_deposit_now -= self.total
-			self.partner_id.write({'total_deposit': total_deposit_now})
+			total = self.total
+			self.total = total*-1
 			self.state = 'cancel'
 			self.user_id = self.env.user.id
 		else:

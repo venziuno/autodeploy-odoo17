@@ -9,8 +9,10 @@
             <field name="is_product">True</field>
             <field name="is_promotion">True</field>
             <field name="is_user">True</field>
+            <field name="is_deposit">True</field>
             <field name="is_transaction">True</field>
             <field name="is_setting">True</field>
+            <field name="group_id" ref="bestindo_custom.group_master_bestindo_custom"/>
         </record>
 
         <record id="roles_admin" model="bp.users.roles">
@@ -20,8 +22,10 @@
             <field name="is_product">True</field>
             <field name="is_promotion">True</field>
             <field name="is_user">False</field>
+            <field name="is_deposit">True</field>
             <field name="is_transaction">True</field>
             <field name="is_setting">False</field>
+            <field name="group_id" ref="bestindo_custom.group_admin_bestindo_custom"/>
         </record>
 
         <record id="roles_driver" model="bp.users.roles">
@@ -31,8 +35,81 @@
             <field name="is_product">False</field>
             <field name="is_promotion">False</field>
             <field name="is_user">False</field>
+            <field name="is_deposit">False</field>
             <field name="is_transaction">False</field>
             <field name="is_setting">False</field>
+            <field name="group_id" ref="bestindo_custom.group_driver_bestindo_custom"/>
+        </record>
+
+        <record id="roles_customer" model="bp.users.roles">
+            <field name="name">Customer</field>
+        </record>
+
+        <record id="discount_product" model="product.product">
+            <field name="name">Discount</field>
+            <field name="detailed_type">service</field>
+            <field name="lst_price">0.0</field>
+        </record>
+
+        <record id="point_product" model="product.product">
+            <field name="name">Point</field>
+            <field name="detailed_type">service</field>
+            <field name="lst_price">0.0</field>
+        </record>
+
+        <record id="deposit_product" model="product.product">
+            <field name="name">Deposit</field>
+            <field name="detailed_type">service</field>
+            <field name="lst_price">0.0</field>
+        </record>
+
+        <record id="ongkir_product" model="product.product">
+            <field name="name">Ongkir</field>
+            <field name="detailed_type">service</field>
+            <field name="lst_price">0.0</field>
+        </record>
+
+        <record id="deposit_account" model="account.account">
+            <field name="name">Deposit</field>
+            <field name="account_type">asset_cash</field>
+            <field name="internal_group">asset</field>
+            <field name="code">1112018</field>
+        </record>
+
+        <record id="deposit_journal" model="account.journal">
+            <field name="name">Deposit</field>
+            <field name="type">bank</field>
+            <field name="code">DP</field>
+            <field name="default_account_id" ref="bestindo_custom.deposit_account"/>
+        </record>
+
+        <record id="deposit_provider" model="payment.provider">
+            <field name="name">Deposit</field>
+            <field name="state">enabled</field>
+            <field name="is_published">True</field>
+            <field name="is_deposit">True</field>
+            <field name="bp_journal_id" ref="bestindo_custom.deposit_journal"/>
+        </record>
+
+        <record id="bank_provider" model="payment.provider">
+            <field name="name">Bank</field>
+            <field name="state">enabled</field>
+            <field name="is_published">True</field>
+            <field name="is_bank">True</field>
+        </record>
+
+        <record id="cash_provider" model="payment.provider">
+            <field name="name">COD</field>
+            <field name="state">enabled</field>
+            <field name="is_published">True</field>
+            <field name="is_cod">True</field>
+        </record>
+
+        <record id="credit_provider" model="payment.provider">
+            <field name="name">Credit</field>
+            <field name="state">enabled</field>
+            <field name="is_published">True</field>
+            <field name="is_credit">True</field>
         </record>
 
     </data>

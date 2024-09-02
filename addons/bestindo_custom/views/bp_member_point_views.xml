@@ -9,6 +9,8 @@
                     <field name="date"/>
                     <field name="partner_id"/>
                     <field name="sale_id"/>
+                    <field name="product_tmpl_id" optional="hide"/>
+                    <field name="product_id" optional="hide"/>
                     <field name="point"/>
                 </tree>
             </field>

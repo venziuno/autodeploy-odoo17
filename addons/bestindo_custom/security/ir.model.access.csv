@@ -8,6 +8,16 @@ access_product_segment,product.segment,model_product_segment,,1,1,1,1
 access_bp_product_image,bp.product.image,model_bp_product_image,,1,1,1,1
 access_bp_product_image_variant,bp.product.image.variant,model_bp_product_image_variant,,1,1,1,1
 access_bp_users_roles,bp.users.roles,model_bp_users_roles,,1,1,1,1
+access_bp_favorite_product,bp.favorite.product,model_bp_favorite_product,,1,1,1,1
+access_bp_negotiation,bp.negotiation,model_bp_negotiation,,1,1,1,1
+access_bp_ongkir,bp.ongkir,model_bp_ongkir,,1,1,1,1
+access_bp_negotiation_line,bp.negotiation.line,model_bp_negotiation_line,,1,1,1,1
+access_bp_auth,bp.auth,model_bp_auth,,1,1,1,1
+access_bp_term,bp.term,model_bp_term,,1,1,1,1
+access_bp_cart,bp.cart,model_bp_cart,,1,1,1,1
+
+access_account_payment_register_line,account.payment.register.line,model_account_payment_register_line,,1,1,1,1
+
 
 
 

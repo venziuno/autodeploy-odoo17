@@ -19,6 +19,11 @@
                             <span class="o_stat_text">Deposit</span>
                         </div>
                     </button>
+                    <button class="oe_stat_button" type="object" name="action_view_favorite_products" groups="bestindo_custom.group_master_bestindo_custom,bestindo_custom.group_admin_bestindo_custom" icon="fa-heart" invisible="user_type == 'driver'">
+                        <div class="o_form_field o_stat_info">
+                            <span class="o_stat_text">Favorite<br/>Products</span>
+                        </div>
+                    </button>
                     <button class="oe_stat_button" type="object" name="action_view_driver_jobs" groups="bestindo_custom.group_master_bestindo_custom,bestindo_custom.group_admin_bestindo_custom" icon="fa-truck" invisible="user_type == 'customer'">
                         <div class="o_form_field o_stat_info">
                             <span class="o_stat_text">Jobs</span>
@@ -127,6 +132,10 @@
                 <xpath expr="//page[@name='internal_notes']" position="attributes">
                     <attribute name="string">Notes</attribute>
                 </xpath>
+                <xpath expr="//field[@name='email']" position="attributes">
+                    <attribute name="string">Email/Username</attribute>
+                    <attribute name="placeholder">ex. bestindo@gmail.com</attribute>
+                </xpath>
                 <xpath expr="//page[@name='internal_notes']" position="before">
                     <!-- <page name="location" string="Geolocation">
                         <separator string="Geolocation"/>
@@ -136,24 +145,45 @@
                         </group>
                         <field name="multi_location_ids"/>
                     </page> -->
+                    <page name="driver_general" string="General" invisible="user_type == 'customer'">
+                        <group>
+                            <group>
+                                <field name="driver_id_no"/>
+                                <field name="driver_sim"/>
+                                <field name="driver_merk"/>
+                            </group>
+                            <group>
+                                <field name="driver_type"/>
+                                <field name="driver_no"/>
+                                <field name="driver_color"/>
+                            </group>
+                        </group>
+                    </page>
                     <page name="general" string="General" invisible="user_type == 'driver'">
                         <separator string="Product Segment"/>
-                        <field name="segment_ids" domain="[('parent_id','=',False)]" options="{&quot;no_open&quot;: True, &quot;no_create&quot;: True}" widget="many2many_tags" nolabel="1"/>
-                        <p><b>Note: </b>All products will be visible to the customer if the Segment is not filled.</p>
+                        <field name="segment_ids" options="{&quot;no_open&quot;: True, &quot;no_create&quot;: True}" widget="many2many_tags" nolabel="1"/>
+                        <p invisible="segment_ids"><b>Note: </b>All products will be visible to the customer if the Segment is not filled.</p>
                         <separator string="Customer Credit"/>
-                        <field name="payment_provider_ids" widget="many2many_tags" domain="[('state','=','enabled')]"/>
+                        <field name="payment_provider_ids" widget="many2many_tags" domain="[('state','=','enabled'),('is_credit','=',True)]" options="{'no_create': True, 'no_edit': True}"/>
+                        <p invisible="payment_provider_ids"><b>Note: </b>Credit will be visible to the customer if the Customer Credit is not filled.</p>
                     </page>
                     <page name="users" string="User" groups="bestindo_custom.group_master_bestindo_custom,bestindo_custom.group_admin_bestindo_custom" invisible="user_ids">
                         <separator string="User"/>
                         <group>
                             <group>
-                                <field name="email" required="0"/>
+                                <field name="email" string="Email/Username" required="0"/>
                                 <field name="password" password="True" required="0" invisible="is_show_password == True"/>
                                 <field name="password" required="0" invisible="is_show_password == False"/>
                             </group>
                         </group>
                         <field name="is_show_password" widget="boolean_toggle"/><span>Show Password</span><br/>
                         <button name="create_users" type="object" class="oe_highlight" string="Create User" invisible="not email and not password"/>
+                    </page>
+                    <page string="Whatsapp" name="whatsapp">
+                        <separator string="Whatsapp"/>
+                        <group>
+                            <field name="is_negotiation" widget="boolean_toggle"/>
+                        </group>
                     </page>
                 </xpath>
                 <xpath expr="//div[@class='oe_chatter']" position="attributes">
@@ -216,6 +246,76 @@
                 </xpath>
                 <xpath expr="//button[@name='action_view_sale_order']" position="attributes">
                     <attribute name="invisible">user_type == 'driver'</attribute>
+                </xpath>
+            </field>
+        </record>
+    </data>
+
+    <data>
+        <record id="bestindo_view_partner_tree" model="ir.ui.view">
+            <field name="name">bp.res.partner.tree</field>
+            <field name="model">res.partner</field>
+            <field name="inherit_id" ref="base.view_partner_tree"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='email']" position="attributes">
+                    <attribute name="string">Email/Username</attribute>
+                </xpath>
+                <xpath expr="//field[@name='user_id']" position="attributes">
+                    <attribute name="column_invisible">1</attribute>
+                </xpath>
+                <xpath expr="//field[@name='activity_ids']" position="attributes">
+                    <attribute name="column_invisible">1</attribute>
+                </xpath>
+            </field>
+        </record>
+
+        <record id="bestindo_view_res_partner_filter" model="ir.ui.view">
+            <field name="name">bp.res.partner.search</field>
+            <field name="model">res.partner</field>
+            <field name="inherit_id" ref="base.view_res_partner_filter"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='parent_id']" position="attributes">
+                    <attribute name="invisible">1</attribute>
+                </xpath>
+                <xpath expr="//field[@name='user_id']" position="attributes">
+                    <attribute name="invisible">1</attribute>
+                </xpath>
+                <xpath expr="//field[@name='email']" position="attributes">
+                    <attribute name="string">Email/Username</attribute>
+                </xpath>
+                <xpath expr="//field[@name='category_id']" position="attributes">
+                    <attribute name="invisible">1</attribute>
+                </xpath>
+                <xpath expr="//field[@name='category_id']" position="after">
+                    <field name="segment_ids" filter_domain="[('segment_ids', '=', raw_value)]"/>
+                </xpath>
+                <xpath expr="//filter[@name='type_person']" position="attributes">
+                    <attribute name="invisible">1</attribute>
+                </xpath>
+                <xpath expr="//filter[@name='type_company']" position="attributes">
+                    <attribute name="invisible">1</attribute>
+                </xpath>
+                <xpath expr="//filter[@name='salesperson']" position="attributes">
+                    <attribute name="invisible">1</attribute>
+                </xpath>
+                <xpath expr="//filter[@name='group_company']" position="attributes">
+                    <attribute name="invisible">1</attribute>
+                </xpath>
+                <xpath expr="//filter[@name='ubl_cii_format']" position="attributes">
+                    <attribute name="invisible">1</attribute>
+                </xpath>
+                <xpath expr="//filter[@name='customer']" position="attributes">
+                    <attribute name="invisible">1</attribute>
+                </xpath>
+                <xpath expr="//filter[@name='supplier']" position="attributes">
+                    <attribute name="invisible">1</attribute>
+                </xpath>
+                <xpath expr="//filter[@name='type_person']" position="after">
+                    <filter string="Company" name="is_company" domain="[('is_company', '=', True)]"/>
+                    <filter string="Allow Negotiation" name="is_negotiation" domain="[('is_negotiation', '=', True)]"/>
+                </xpath>
+                <xpath expr="//filter[@name='group_country']" position="before">
+                    <filter string="Product Segment" name="segment_ids" context="{'group_by':'segment_ids'}"/>
                 </xpath>
             </field>
         </record>

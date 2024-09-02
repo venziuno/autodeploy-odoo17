@@ -1,6 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <data>
+        <record id="view_bestindo_company_tree" model="ir.ui.view">
+            <field name="name">res.company.form</field>
+            <field name="model">res.company</field>
+            <field name="inherit_id" ref="base.view_company_tree"/>
+            <field name="arch" type="xml">
+                <xpath expr="//tree" position="attributes">
+                    <attribute name="create">0</attribute>
+                </xpath>
+            </field>
+        </record>
+        
+        
         <record id="view_bestindo_company_form" model="ir.ui.view">
             <field name="name">res.company.form</field>
             <field name="model">res.company</field>
@@ -34,12 +46,32 @@
                     <attribute name="invisible">1</attribute>
                 </xpath>
                 <xpath expr="//page[@name='branches']" position="after" groups="bestindo_custom.group_master_bestindo_custom">
-                    <page string="API Settings" name="page_lazada">
+                    <page string="Service Product" name="service_product">
+                        <separator string="Service Product"/>
+                        <group>
+                            <field name="discount_product_id" domain="[('detailed_type','=','service')]"/>
+                            <field name="point_product_id" domain="[('detailed_type','=','service')]"/>
+                            <field name="deposit_product_id" domain="[('detailed_type','=','service')]"/>
+                            <field name="ongkir_product_id" domain="[('detailed_type','=','service')]"/>
+                            <field name="deposit_journal_id" domain="[('name','=','Deposit')]" widget="selection"/>
+                        </group>
+                    </page>
+                    <page string="API Settings" name="api_setting">
                         <separator string="Token"/>
                         <button name="create_token_api" type="object" class="oe_highlight" string="Get Token"/>
                         <group>
                             <field name="token_api"/>
                         </group>
+
+                        <!-- <separator string="Minio Settings"/>
+                        <group>
+                            <field name="minio_url"/>
+                            <field name="minio_key_id" password="False" readonly="1"/>
+                            <field name="minio_access_key" password="False" readonly="1"/>
+                            <field name="minio_region" readonly="1"/>
+                            <field name="minio_bucket" readonly="0"/>
+                            <field name="serve_url"/>
+                        </group> -->
                     </page>
                 </xpath>
             </field>

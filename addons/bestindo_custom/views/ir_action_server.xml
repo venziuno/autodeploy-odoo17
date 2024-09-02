@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- Delivery Orders -->
+        <record id="stock.action_unreserve_picking" model="ir.actions.server">
+            <field name="groups_id" eval="[(6, 0, [ref('bestindo_custom.group_hide_bestindo_custom')])]"/>
+        </record>
+        <record id="stock.action_toggle_is_locked" model="ir.actions.server">
+            <field name="groups_id" eval="[(6, 0, [ref('bestindo_custom.group_hide_bestindo_custom')])]"/>
+        </record>
+        <record id="stock.action_scrap" model="ir.actions.server">
+            <field name="groups_id" eval="[(6, 0, [ref('bestindo_custom.group_hide_bestindo_custom')])]"/>
+        </record>
+        <record id="stock.action_lead_mass_mail" model="ir.actions.act_window">
+            <field name="groups_id" eval="[(6, 0, [ref('bestindo_custom.group_hide_bestindo_custom')])]"/>
+        </record>
+
+        <!-- Products -->
+        <record id="product.action_product_template_price_list_report" model="ir.actions.server">
+            <field name="groups_id" eval="[(6, 0, [ref('bestindo_custom.group_hide_bestindo_custom')])]"/>
+        </record>
+        <record id="product.action_product_price_list_report" model="ir.actions.server">
+            <field name="groups_id" eval="[(6, 0, [ref('bestindo_custom.group_hide_bestindo_custom')])]"/>
+        </record>
+
+        <!-- Users -->
+        <record id="portal.partner_wizard_action_create_and_open" model="ir.actions.server">
+            <field name="groups_id" eval="[(6, 0, [ref('bestindo_custom.group_hide_bestindo_custom')])]"/>
+        </record>
+        <record id="web.download_contact" model="ir.actions.server">
+            <field name="groups_id" eval="[(6, 0, [ref('bestindo_custom.group_hide_bestindo_custom')])]"/>
+        </record>
+        <record id="privacy_lookup.ir_action_server_action_privacy_lookup_partner" model="ir.actions.server">
+            <field name="groups_id" eval="[(6, 0, [ref('bestindo_custom.group_hide_bestindo_custom')])]"/>
+        </record>
+        <record id="privacy_lookup.ir_action_server_action_privacy_lookup_user" model="ir.actions.server">
+            <field name="groups_id" eval="[(6, 0, [ref('bestindo_custom.group_hide_bestindo_custom')])]"/>
+        </record>
+
+        <record id="sms.res_partner_act_window_sms_composer_multi" model="ir.actions.act_window">
+            <field name="groups_id" eval="[(6, 0, [ref('bestindo_custom.group_hide_bestindo_custom')])]"/>
+        </record>
+        <record id="sms.res_partner_act_window_sms_composer_single" model="ir.actions.act_window">
+            <field name="groups_id" eval="[(6, 0, [ref('bestindo_custom.group_hide_bestindo_custom')])]"/>
+        </record>
+
+        <!-- Transaction -->
+        <record id="sale.model_sale_order_action_quotation_sent" model="ir.actions.server">
+            <field name="groups_id" eval="[(6, 0, [ref('bestindo_custom.group_hide_bestindo_custom')])]"/>
+        </record>
+        <record id="sale.model_sale_order_action_share" model="ir.actions.server">
+            <field name="groups_id" eval="[(6, 0, [ref('bestindo_custom.group_hide_bestindo_custom')])]"/>
+        </record>
+
+        <record id="sale.action_mass_cancel_orders" model="ir.actions.act_window">
+            <field name="groups_id" eval="[(6, 0, [ref('bestindo_custom.group_hide_bestindo_custom')])]"/>
+        </record>
+        <record id="sale.action_view_sale_advance_payment_inv" model="ir.actions.act_window">
+            <field name="groups_id" eval="[(6, 0, [ref('bestindo_custom.group_hide_bestindo_custom')])]"/>
+        </record>
+        <record id="sale.action_sale_order_generate_link" model="ir.actions.act_window">
+            <field name="groups_id" eval="[(6, 0, [ref('bestindo_custom.group_hide_bestindo_custom')])]"/>
+        </record>
+
+        <!-- Settings -->
+        <record id="auth_totp.action_disable_totp" model="ir.actions.server">
+            <field name="groups_id" eval="[(6, 0, [ref('bestindo_custom.group_hide_bestindo_custom')])]"/>
+        </record>
+        <record id="auth_totp_mail.action_invite_totp" model="ir.actions.server">
+            <field name="groups_id" eval="[(6, 0, [ref('bestindo_custom.group_hide_bestindo_custom')])]"/>
+        </record>
+    </data>
+</odoo>

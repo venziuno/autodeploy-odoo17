@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="bp_payment_provider_form" model="ir.ui.view">
+            <field name="name">bp.payment.provider.form</field>
+            <field name="model">payment.provider</field>
+            <field name="inherit_id" ref="payment.payment_provider_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='code']" position="attributes">
+                    <attribute name="invisible">1</attribute>
+                    <attribute name="readonly">1</attribute>
+                </xpath>
+                <xpath expr="//field[@name='so_reference_type']" position="attributes">
+                    <attribute name="invisible">1</attribute>
+                </xpath>
+                <xpath expr="//group[@name='availability']" position="attributes">
+                    <attribute name="invisible">1</attribute>
+                </xpath>
+                <xpath expr="//div[@id='provider_creation_warning']" position="attributes">
+                    <attribute name="invisible">1</attribute>
+                </xpath>
+                <xpath expr="//page[@name='messages']" position="attributes">
+                    <attribute name="invisible">1</attribute>
+                </xpath>
+                <xpath expr="//page[@name='configuration']" position="attributes">
+                    <attribute name="invisible">1</attribute>
+                </xpath>
+                <xpath expr="//page[@name='messages']" position="after">
+                    <page string="Info" name="info" invisible="code != 'custom' or is_bank == False">
+                        <group>
+                            <field name="acc_name"/>
+                            <field name="acc_number"/>
+                            <field name="description" string="Description"/>
+                        </group>
+                    </page>
+                </xpath>
+                <xpath expr="//div[@name='button_box']" position="replace">
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_toggle_is_published" invisible="not is_published" class="oe_stat_button" type="object" icon="fa-globe">
+                            <div class="o_stat_info o_field_widget">
+                                <span class="o_stat_text text-success">Published</span>
+                            </div>
+                        </button>
+                        <button name="action_toggle_is_published" invisible="is_published" class="oe_stat_button" type="object" icon="fa-eye-slash">
+                            <div class="o_stat_info o_field_widget">
+                                <span class="o_stat_text text-danger">Unpublished</span>
+                            </div>
+                        </button>
+                    </div>
+                </xpath>
+                <xpath expr="//group[@name='payment_state']" position="replace">
+                    <field name="code" invisible="1"/>
+                    <field name="state" widget="radio"/>
+                    <field name="bp_journal_id" required="1" domain="[('type','in',['bank','cash'])]"/>
+                    <field name="is_deposit"/>
+                    <field name="is_credit"/>
+                    <field name="is_bank"/>
+                    <field name="is_cod"/>
+                </xpath>
+            </field>
+        </record>
+
+        <record id="payment.action_payment_provider" model="ir.actions.act_window">
+            <field name="domain">[('code','=','custom')]</field>
+        </record>
+
+        <record id="bp_payment_provider_kanban" model="ir.ui.view">
+            <field name="name">bp.payment.provider.kanban</field>
+            <field name="model">payment.provider</field>
+            <field name="inherit_id" ref="payment.payment_provider_kanban"/>
+            <field name="arch" type="xml">
+                <xpath expr="//kanban" position="attributes">
+                    <attribute name="create">1</attribute>
+                    <attribute name="quick_create">1</attribute>
+                </xpath>
+            </field>
+        </record>
+    </data>
+</odoo>

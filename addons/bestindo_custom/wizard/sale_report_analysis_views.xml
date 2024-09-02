@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="bp_sale_report_analysis_view_form" model="ir.ui.view">
+        <field name="name">bp.sale.report.analysis.form</field>
+        <field name="model">sale.report.analysis</field>
+        <field name="inherit_id" ref="all_in_one_sales_kit.sale_report_analysis_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='customer_ids']" position="attributes">
+                <attribute name="required">0</attribute>
+                <attribute name="domain">[('user_type','=','customer'),('is_another_address','=',False)]</attribute>
+            </xpath>
+            <xpath expr="//field[@name='product_ids']" position="attributes">
+                <attribute name="domain">[('detailed_type','!=','service')]</attribute>
+            </xpath>
+            <xpath expr="//group" position="after">
+                <p style="color: red"><b>Note: </b><br/>
+                - If Customers is not filled, all customer will be showed<br/>
+                - If Products is not filled, all product will be showed<br/>
+                - If Start date or End date is not filled, all data will be showed
+                </p>
+            </xpath>
+        </field>
+    </record>
+</odoo>

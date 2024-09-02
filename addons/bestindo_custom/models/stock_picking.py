@@ -6,8 +6,30 @@ from odoo import api, fields, models, tools, _
 
 class StockPicking(models.Model):
 	_inherit = 'stock.picking'
+	_order = 'id desc'
 
 	driver_id = fields.Many2one('res.users','Driver',related='sale_id.driver_id',store=True)
+	driver_img = fields.Binary('Image')
+	delivery_status = fields.Selection([
+		('draft','Draft'),
+		('ready','Ready to Ship'),
+		('on_process','On Process'),
+		('on_hold','On Hold'),
+		('done','Done')
+	], string='Delivery Status', default='draft')
+	recipient_name = fields.Char('Recipient')
+	transaction_count = fields.Integer(compute="_compute_transaction_count", string='Sale Order Count')
+
+	@api.depends('sale_id')
+	def _compute_transaction_count(self):
+		for pick in self:
+			pick.transaction_count = len(pick.sale_id)
+
+	@api.onchange('driver_id')
+	def onchange_driver_id(self):
+		for pick in self:
+			if pick.driver_id:
+				pick.sale_id.driver_id = pick.driver_id.id
 
 	def button_validate(self):
 		draft_picking = self.filtered(lambda p: p.state == 'draft')
@@ -43,13 +65,10 @@ class StockPicking(models.Model):
 		another_action = False
 
 		if self.sale_id:
-			all_delivered = all(
-				line.qty_delivered >= line.product_uom_qty
-				for line in self.sale_id.order_line
-				if line.product_id.detailed_type != 'service'
-			)
-			if all_delivered:
+			invoice_paid = self.sale_id.invoice_ids.filtered(lambda p: p.payment_state == 'paid' and p.move_type == 'out_invoice')
+			if invoice_paid:
 				self.sale_id.action_to_done()
+		self.delivery_status = 'done'
 
 		if self.user_has_groups('stock.group_reception_report'):
 			pickings_show_report = self.filtered(lambda p: p.picking_type_id.auto_show_reception_report)
@@ -79,3 +98,16 @@ class StockPicking(models.Model):
 				}
 			}
 		return True
+
+	def action_open_transaction(self):
+		self.ensure_one()
+		source_orders = self.sale_id
+		result = self.env['ir.actions.act_window']._for_xml_id('sale.action_orders')
+		if len(source_orders) > 1:
+			result['domain'] = [('id', 'in', source_orders.ids)]
+		elif len(source_orders) == 1:
+			result['views'] = [(self.env.ref('sale.view_order_form', False).id, 'form')]
+			result['res_id'] = source_orders.id
+		else:
+			result = {'type': 'ir.actions.act_window_close'}
+		return result

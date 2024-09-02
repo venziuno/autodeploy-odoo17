@@ -5,14 +5,17 @@
             <field name="name">bp.deposit.tree</field>
             <field name="model">bp.deposit</field>
             <field name="arch" type="xml">
-                <tree string="Deposit" create="0">
+                <tree string="Deposit" create="1">
+                    <field name="name"/>
                     <field name="date"/>
                     <field name="partner_id"/>
                     <field name="total"/>
+                    <field name="payment_id" domain="[('code','=','custom')]"/>
                     <field name="state" widget="badge"
-                        decoration-info="state == 'check'"
-                        decoration-success="state == 'done'"
-                        decoration-danger="state == 'cancel'"/>
+                        decoration-warning="state == 'check'"
+                        decoration-success="state in ['done']"
+                        decoration-info="state == 'used'"
+                        decoration-danger="state in ['cancel']"/>
                 </tree>
             </field>
         </record>
@@ -21,23 +24,51 @@
             <field name="name">bp.deposit.form</field>
             <field name="model">bp.deposit</field>
             <field name="arch" type="xml">
-                <form string="Deposit" create="0" edit="0">
+                <form string="Deposit" create="1" edit="1">
                     <header>
                         <button name="action_confirm" string="Confirm" type="object" class="oe_highlight" invisible="state == 'cancel' or state == 'done'"/>
-                        <button name="action_cancel" string="Cancel" type="object" invisible="state == 'cancel'"/>
-                        <button name="action_to_check" string="To Check" type="object" invisible="state == 'cancel' or state == 'done' or state == 'check'"/>
-                        <field name="state" widget="statusbar" statusbar_visible="check,done,cancel"/>
+                        <button name="action_cancel" string="Cancel" type="object" class="bp-button-red" invisible="state == 'cancel'"/>
+                        <button name="action_to_check" string="To Check" type="object" class="bp-button-yellow" invisible="state == 'cancel' or state == 'done' or state == 'check'"/>
+                        <field name="state" widget="statusbar" statusbar_visible="check,done,cancel,used"/>
                     </header>
                     <sheet>
                         <group>
-                            <field name="date" required="1"/>
-                            <field name="partner_id" required="1"/>
-                            <field name="total" required="1"/>
-                            <!-- <field name="state"/> -->
-                            <field name="image" widget="image" required="1"/>
+                            <field name="name"/>
+                            <field name="reason" invisible="state != 'cancel'" required="state == 'cancel'"/>
                         </group>
+                        <p invisible="state != 'cancel'" style="color: red"><b>Note: </b>Mohon alasan dicancel di isi.</p><br/>
+                        <group>
+                            <field name="date" required="1"/>
+                            <field name="partner_id" required="1" domain="[('is_another_address','=',False),('user_type','=','customer')]"/>
+                            <field name="total" required="1"/>
+                            <field name="payment_id" widget="selection" domain="[('code','=','custom')]"/>
+                        </group>
+                        <notebook>
+                            <page string="Image" name="image">
+                                <field name="image" widget="image" required="1"/>
+                            </page>
+                        </notebook>
                     </sheet>
                 </form>
+            </field>
+        </record>
+
+        <record id="view_bp_deposit_search" model="ir.ui.view">
+            <field name="name">bp.deposit.search</field>
+            <field name="model">bp.deposit</field>
+            <field name="arch" type="xml">
+                <search string="Deposit">
+                    <filter string="Check" name="check" domain="[('state', '=', 'check')]"/>
+                    <filter string="Used" name="used" domain="[('state', '=', 'used')]"/>
+                    <filter string="Done" name="done" domain="[('state', '=', 'done')]"/>
+                    <filter string="Cancel" name="cancel" domain="[('state', '=', 'cancel')]"/>
+
+                    <group expand="1" string="Group By">
+                        <filter string="Customer" name="partner_id" context="{'group_by':'partner_id'}"/>
+                        <filter string="Payment" name="payment_id" context="{'group_by':'payment_id'}"/>
+                        <filter string="Status" name="state" context="{'group_by':'state'}"/>
+                    </group>
+                </search>
             </field>
         </record>
 

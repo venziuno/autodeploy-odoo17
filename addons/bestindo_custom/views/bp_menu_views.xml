@@ -73,8 +73,30 @@
         web_icon="stock,static/description/icon.png"/>
     <menuitem id="stock.menu_stock_warehouse_mgmt" name="Operations" parent="stock.menu_stock_root" sequence="2" groups="bestindo_custom.group_hide_bestindo_custom"/>
     <menuitem id="stock.menu_stock_inventory_control" name="Products" parent="stock.menu_stock_root" sequence="4" groups="bestindo_custom.group_hide_bestindo_custom"/>
-    <menuitem id="stock.menu_stock_config_settings" name="Configuration" parent="stock.menu_stock_root" sequence="100" groups="bestindo_custom.group_hide_bestindo_custom"/>
-    <menuitem id="stock.menu_warehouse_report" name="Reporting" sequence="99" parent="stock.menu_stock_root" groups="bestindo_custom.group_hide_bestindo_custom"/>
+
+    <data>
+        <record id="stock.menu_warehouse_report" model="ir.ui.menu" forcecreate="True">
+            <field name="groups_id" eval="[(6, 0, [])]"/>
+        </record>
+
+        <record id="stock.menu_warehouse_report" model="ir.ui.menu">
+            <field name="name">Reporting</field>
+            <field name="sequence">99</field>
+            <field name="parent_id" ref="stock.menu_stock_root"/>
+            <field name="groups_id" eval="[(6, 0, [ref('bestindo_custom.group_hide_bestindo_custom')])]"/>
+        </record>
+
+        <record id="stock.menu_stock_config_settings" model="ir.ui.menu" forcecreate="True">
+            <field name="groups_id" eval="[(6, 0, [])]"/>
+        </record>
+
+        <record id="stock.menu_stock_config_settings" model="ir.ui.menu">
+            <field name="name">Configuration</field>
+            <field name="sequence">100</field>
+            <field name="parent_id" ref="stock.menu_stock_root"/>
+            <field name="groups_id" eval="[(6, 0, [ref('bestindo_custom.group_hide_bestindo_custom')])]"/>
+        </record>
+    </data>
 
     <!-- Promotion -->
     <menuitem name="Promotions"
@@ -104,11 +126,36 @@
         action="action_drivers"
         parent="contacts.menu_contacts"
         sequence="3"/>
-    <menuitem id="contacts.res_partner_menu_config"
-        name="Configuration"
+    <!-- <menuitem id="res_partner_menu_deposit"
+        name="Deposit"
+        action="action_bp_deposit"
         parent="contacts.menu_contacts"
-        groups="bestindo_custom.group_hide_bestindo_custom"
-        sequence="2"/>
+        sequence="4"/> -->
+
+    <data>
+        <record id="contacts.res_partner_menu_config" model="ir.ui.menu" forcecreate="True">
+            <field name="groups_id" eval="[(6, 0, [])]"/>
+        </record>
+
+        <record id="contacts.res_partner_menu_config" model="ir.ui.menu">
+            <field name="name">Configuration</field>
+            <field name="sequence">2</field>
+            <field name="parent_id" ref="stock.menu_stock_root"/>
+            <field name="groups_id" eval="[(6, 0, [ref('bestindo_custom.group_hide_bestindo_custom')])]"/>
+        </record>
+    </data>
+
+    <!-- Deposit -->
+    <menuitem name="Deposit"
+        id="res_partner_menu_deposit"
+        sequence="5"
+        web_icon="bestindo_custom,static/description/deposit.png"
+        groups="bestindo_custom.group_master_bestindo_custom,bestindo_custom.group_admin_bestindo_custom"/>
+    <menuitem id="res_partner_menu_deposits"
+        name="Deposit"
+        action="action_bp_deposit"
+        parent="res_partner_menu_deposit"
+        sequence="10"/>
 
     <!-- Sales -->
     <menuitem id="sale.sale_menu_root"
@@ -122,6 +169,22 @@
         parent="sale.sale_menu_root"
         action="bp_action_orders"
         sequence="6"/>
+    <menuitem id="bp_negotiation_menu"
+        name="Negotiations"
+        groups="bestindo_custom.group_master_bestindo_custom,bestindo_custom.group_admin_bestindo_custom"
+        parent="sale.sale_menu_root"
+        action="action_bp_negotiation"
+        sequence="7"/>
+    <menuitem id="bp_reporting_menu"
+        name="Reporting"
+        groups="bestindo_custom.group_master_bestindo_custom,bestindo_custom.group_admin_bestindo_custom"
+        parent="sale.sale_menu_root"
+        sequence="8">
+        <menuitem id="bp_sale_analysis_report"
+            name="Sale Analysis Report"
+            action="all_in_one_sales_kit.action_sale_analysis_report"
+            sequence="10"/>
+    </menuitem>
     <menuitem id="sale.product_menu_catalog"
         name="Products"
         parent="sale.sale_menu_root"
@@ -151,6 +214,39 @@
         <record id="sale.menu_sale_invoicing" model="ir.ui.menu">
             <field name="name">To Invoice</field>
             <field name="sequence">20</field>
+            <field name="parent_id" ref="sale.sale_menu_root"/>
+            <field name="groups_id" eval="[(6, 0, [ref('bestindo_custom.group_hide_bestindo_custom')])]"/>
+        </record>
+
+        <record id="sale.product_menu_catalog" model="ir.ui.menu" forcecreate="True">
+            <field name="groups_id" eval="[(6, 0, [])]"/>
+        </record>
+
+        <record id="sale.product_menu_catalog" model="ir.ui.menu">
+            <field name="name">Products</field>
+            <field name="sequence">30</field>
+            <field name="parent_id" ref="sale.sale_menu_root"/>
+            <field name="groups_id" eval="[(6, 0, [ref('bestindo_custom.group_hide_bestindo_custom')])]"/>
+        </record>
+
+        <record id="sale.menu_sale_report" model="ir.ui.menu" forcecreate="True">
+            <field name="groups_id" eval="[(6, 0, [])]"/>
+        </record>
+
+        <record id="sale.menu_sale_report" model="ir.ui.menu">
+            <field name="name">Reporting</field>
+            <field name="sequence">40</field>
+            <field name="parent_id" ref="sale.sale_menu_root"/>
+            <field name="groups_id" eval="[(6, 0, [ref('bestindo_custom.group_hide_bestindo_custom')])]"/>
+        </record>
+
+        <record id="sale.menu_sale_config" model="ir.ui.menu" forcecreate="True">
+            <field name="groups_id" eval="[(6, 0, [])]"/>
+        </record>
+
+        <record id="sale.menu_sale_config" model="ir.ui.menu">
+            <field name="name">Configuration</field>
+            <field name="sequence">50</field>
             <field name="parent_id" ref="sale.sale_menu_root"/>
             <field name="groups_id" eval="[(6, 0, [ref('bestindo_custom.group_hide_bestindo_custom')])]"/>
         </record>
@@ -195,7 +291,100 @@
             name="Roles"
             action="action_bp_users_roles"
             sequence="30"/>
+        <menuitem id="product_configuration_menu_bp_customs"
+            name="Configuration"
+            sequence="40">
+           <!--  <menuitem id="product_pricelists_menu_bp_customs"
+            name="Pricelists"
+            action="product.product_pricelist_action2"
+            sequence="10"/> -->
+            <menuitem id="product_attribute_menu_bp_customs"
+                name="Product Attributes"
+                action="product.attribute_action"
+                sequence="10"/>
+            <menuitem id="delivery_method_menu_bp_customs"
+                name="Delivery Method"
+                action="delivery.action_delivery_carrier_form"
+                sequence="15"/>
+            <menuitem id="payment_provider_menu_bp_customs"
+                name="Payment Provider"
+                action="payment.action_payment_provider"
+                sequence="20"/>
+            <menuitem id="journal_menu_bp_customs"
+                name="Journal"
+                action="account.action_account_journal_form"
+                sequence="25"/>
+            <menuitem id="term_menu_bp_customs"
+                name="Term"
+                action="bestindo_custom.action_bp_term"
+                sequence="30"/>
+            <menuitem id="cart_menu_bp_customs"
+                name="Cart"
+                action="bestindo_custom.action_bp_cart"
+                groups="bestindo_custom.group_hide_bestindo_custom"
+                sequence="35"/>
+        </menuitem>
     </menuitem>
 
+    <data>
+        <!-- Discuss Hide -->
+        <record id="mail.menu_root_discuss" model="ir.ui.menu" forcecreate="True">
+            <field name="groups_id" eval="[(6, 0, [])]"/>
+        </record>
 
+        <record id="mail.menu_root_discuss" model="ir.ui.menu">
+            <field name="name">Discuss</field>
+            <field name="sequence">5</field>
+            <field name="web_icon">mail,static/description/icon.png</field>
+            <field name="groups_id" eval="[(6, 0, [ref('bestindo_custom.group_hide_bestindo_custom')])]"/>
+        </record>
+
+        <!-- Invoicing Hide -->
+        <record id="account.menu_finance" model="ir.ui.menu" forcecreate="True">
+            <field name="groups_id" eval="[(6, 0, [])]"/>
+        </record>
+
+        <record id="account.menu_finance" model="ir.ui.menu">
+            <field name="name">Invoicing</field>
+            <field name="sequence">55</field>
+            <field name="web_icon">account,static/description/icon.png</field>
+            <field name="groups_id" eval="[(6, 0, [ref('bestindo_custom.group_hide_bestindo_custom')])]"/>
+        </record>
+
+        <!-- Link Tracer Hide -->
+        <record id="utm.menu_link_tracker_root" model="ir.ui.menu" forcecreate="True">
+            <field name="groups_id" eval="[(6, 0, [])]"/>
+        </record>
+
+        <record id="utm.menu_link_tracker_root" model="ir.ui.menu">
+            <field name="name">Link Tracer</field>
+            <field name="sequence">270</field>
+            <field name="web_icon">utm,static/description/icon.png</field>
+            <field name="groups_id" eval="[(6, 0, [ref('bestindo_custom.group_hide_bestindo_custom')])]"/>
+        </record>
+
+        <!-- Settings Hide -->
+        <record id="base.menu_administration" model="ir.ui.menu" forcecreate="True">
+            <field name="groups_id" eval="[(6, 0, [])]"/>
+        </record>
+
+        <record id="base.menu_administration" model="ir.ui.menu">
+            <field name="name">Settings</field>
+            <field name="sequence">550</field>
+            <field name="web_icon">base,static/description/settings.png</field>
+            <field name="groups_id" eval="[(6, 0, [ref('bestindo_custom.group_hide_bestindo_custom')])]"/>
+        </record>
+
+        <!-- Apps Hide -->
+        <record id="base.menu_management" model="ir.ui.menu" forcecreate="True">
+            <field name="groups_id" eval="[(6, 0, [])]"/>
+        </record>
+
+        <record id="base.menu_management" model="ir.ui.menu">
+            <field name="name">Apps</field>
+            <field name="sequence">500</field>
+            <field name="web_icon">base,static/description/modules.png</field>
+            <field name="groups_id" eval="[(6, 0, [ref('bestindo_custom.group_apps_bestindo_custom')])]"/>
+        </record>
+    </data>
 </odoo>

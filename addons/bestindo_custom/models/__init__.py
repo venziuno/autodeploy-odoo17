@@ -10,3 +10,9 @@ from . import payment_provider
 from . import sale_order
 from . import stock_picking
 from . import bp_users_roles
+from . import account_move
+from . import bp_negotiation
+from . import delivery_carrier
+from . import bp_auth
+from . import bp_term
+from . import bp_cart

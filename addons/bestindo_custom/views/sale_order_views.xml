@@ -12,6 +12,17 @@
                 <xpath expr="//button[@name='action_create_versions']" position="attributes">
                     <attribute name="invisible">1</attribute>
                 </xpath>
+                <xpath expr="//field[@name='quotation_ref']" position="replace">
+                    <field name="quotation_ref" invisible="1"/>
+                    <field name="version_count" invisible="1"/>
+                    <field name="delivery_set" invisible="1"/>
+                    <field name="is_all_service" invisible="1"/>
+                    <field name="recompute_delivery_price" invisible="1"/>
+                </xpath>
+                <xpath expr="//field[@name='name']" position="replace">
+                    <field name="name" readonly="1"/>
+                    <field name="partner_invoice_id" invisible="1"/>
+                </xpath>
                 <xpath expr="//field[@name='order_line']/tree/field[@name='barcode_scan']" position="attributes">
                     <attribute name="column_invisible">True</attribute>
                 </xpath>
@@ -41,6 +52,9 @@
             <field name="model">sale.order</field>
             <field name="inherit_id" ref="sale.sale_order_tree"/>
             <field name="arch" type="xml">
+                <xpath expr="//button[@name=%(sale.action_view_sale_advance_payment_inv)d]" position="attributes">
+                    <attribute name="invisible">1</attribute>
+                </xpath>
                 <xpath expr="//field[@name='amount_total']" position="after">
                     <field name="state"
                         decoration-success="state == 'done'"
@@ -48,8 +62,16 @@
                         decoration-info="state == 'sale'"
                         decoration-danger="state == 'cancel'"
                         widget="badge"/>
+                    <field name="payment_state"
+                        decoration-success="payment_state == 'paid'"
+                        decoration-warning="payment_state == 'partial'"
+                        decoration-danger="payment_state == 'not_paid'"
+                        widget="badge"/>
                 </xpath>
                 <xpath expr="//field[@name='user_id']" position="attributes">
+                    <attribute name="column_invisible">1</attribute>
+                </xpath>
+                <xpath expr="//field[@name='invoice_status']" position="attributes">
                     <attribute name="column_invisible">1</attribute>
                 </xpath>
                 <xpath expr="//field[@name='activity_ids']" position="attributes">
@@ -67,13 +89,18 @@
                     <attribute name="statusbar_visible">draft,sent,sale,done</attribute>
                 </xpath>
                 <xpath expr="//header/button[@name='action_cancel']" position="replace">
-                    <button name="action_cancel" type="object" string="Cancel" groups="bestindo_custom.group_master_bestindo_custom,bestindo_custom.group_admin_bestindo_custom" invisible="state not in ['draft', 'sent','sale','waiting_for_approval']" data-hotkey="z"/>
+                    <button name="action_cancel" type="object" string="Cancel" class="bp-button-red" groups="bestindo_custom.group_master_bestindo_custom,bestindo_custom.group_admin_bestindo_custom" invisible="state not in ['draft', 'sent','sale','waiting_for_approval']" data-hotkey="z"/>
                 </xpath>
                 <xpath expr="//button[@name='action_preview_sale_order']" position="attributes">
                     <attribute name="invisible">1</attribute>
                 </xpath>
                 <xpath expr="//button[@name='action_quotation_send']" position="attributes">
                     <attribute name="invisible">1</attribute>
+                </xpath>
+                <xpath expr="//button[@name=%(sale.action_view_sale_advance_payment_inv)d]" position="replace">
+                    <button id="create_invoice" name="%(sale.action_view_sale_advance_payment_inv)d" string="Create Invoice"
+                    type="action" class="btn-primary" data-hotkey="i"
+                    invisible="1"/>
                 </xpath>
                 <xpath expr="//button[@id='send_by_email']" position="attributes">
                     <attribute name="invisible">1</attribute>
@@ -83,7 +110,8 @@
                 </xpath>
                 <xpath expr="//button[@name='action_quotation_send']" position="after">
                     <button name="action_check" class="oe_highlight" type="object" string="Set to Checking" groups="bestindo_custom.group_master_bestindo_custom,bestindo_custom.group_admin_bestindo_custom" invisible="state != 'draft'"/>
-                    
+                    <button name="action_add_deposit" class="oe_highlight" type="object" string="Add Deposit" invisible="1"/>
+                    <button name="action_add_point" class="oe_highlight" type="object" string="Add Point" invisible="1"/>
                 </xpath>
                 <xpath expr="//page[@name='other_information']" position="attributes">
                     <attribute name="invisible">1</attribute>
@@ -92,6 +120,24 @@
                     <attribute name="invisible">1</attribute>
                 </xpath>
                 <xpath expr="//page[@name='order_lines']" position="after">
+                     <page string="Info" name="info_order">
+                        <group>
+                            <group>
+                                <field name="name" readonly="1"/>
+                                <field name="date_order" readonly="1"/>
+                                <field name="payment_date" readonly="1"/>
+                                <field name="delivery_date" readonly="1"/>
+                                <field name="payment_state" readonly="1"/>
+                            </group>
+                            <group>
+                                <field name="order_state" readonly="1" widget="statusbar" string="Status Order"/>
+                                <field name="date_packed"/>
+                                <field name="delivery_done_date" readonly="1"/>
+                                <field name="recipient_name"/>
+                                <field name="driver_id" readonly="1"/>
+                            </group> 
+                        </group>
+                    </page>
                     <page string="Transfer Image" name="transfer_img">
                         <field name="transfer_img" widget="image"/>
                     </page>
@@ -101,6 +147,7 @@
                 <xpath expr="//field[@name='order_line']/tree//field[@name='product_id']" position="attributes">
                     <attribute name="string">Product</attribute>
                     <attribute name="optional">show</attribute>
+                    <attribute name="domain">[('detailed_type','!=','service')]</attribute>
                 </xpath>
                 <xpath expr="//field[@name='order_line']/tree//field[@name='product_template_id']" position="attributes">
                     <attribute name="column_invisible">True</attribute>
@@ -125,8 +172,57 @@
                     <attribute name="column_invisible">False</attribute>
                     <attribute name="string">Total</attribute>
                 </xpath>
-                <xpath expr="//field[@name='partner_id']" position="after">
-                    <field name="driver_id"/>
+                <xpath expr="//field[@name='payment_term_id']" position="attributes">
+                    <attribute name="invisible">1</attribute>
+                </xpath>
+                <xpath expr="//field[@name='date_order']" position="attributes">
+                    <attribute name="invisible">1</attribute>
+                </xpath>
+                <xpath expr="//field[@name='validity_date']" position="attributes">
+                    <attribute name="invisible">1</attribute>
+                </xpath>
+                <xpath expr="//field[@name='pricelist_id']" position="attributes">
+                    <attribute name="invisible">1</attribute>
+                </xpath>
+                <xpath expr="//field[@name='partner_id']" position="attributes">
+                    <attribute name="domain">[('company_id', 'in', (False, company_id)),('is_another_address','=',False)]</attribute>
+                    <attribute name="context">{'res_partner_search_mode': 'customer', 'show_address': 0, 'show_vat': False}</attribute>
+                </xpath>
+                <xpath expr="//field[@name='show_update_pricelist']" position="after">
+                    <field name="carrier_id" string="Delivery" readonly="state == 'done'"/>
+                    <field name="bp_term_id" string="Term"/>
+                    <field name="po_number"/>
+                    <field name="log_number"/>
+                </xpath>
+                <xpath expr="//div[@class='o_td_label']" position="attributes">
+                    <attribute name="invisible">1</attribute>
+                </xpath>
+                <xpath expr="//field[@name='note']" position="attributes">
+                    <attribute name="placeholder">Note...</attribute>
+                    <attribute name="nolabel">0</attribute>
+                    <attribute name="string">Note</attribute>
+                </xpath>
+                <!-- <xpath expr="//field[@name='partner_id']" position="after">
+                    <field name="address_type" nolabel="0"/>
+                    <field name="full_address" invisible="full_address == False" nolabel="0"/>
+                    <field name="custom_address" invisible="address_type != 'custom'"/>
+                    <field name="provider_id" required="state not in ('cancel','draft')" readonly="state == 'done'" string="Payment Method" domain="[('code','=','custom')]" widget="selection"/>
+                </xpath> -->
+                <xpath expr="//group[@name='partner_details']" position="replace">
+                    <group name="partner_details">
+                        <field name="partner_id" string="Customer" widget="res_partner_many2one" readonly="state in ['cancel', 'sale','done']" domain="[('company_id', 'in', (False, company_id)),('is_another_address','=',False),('user_type','=','customer')]"/>
+                        <field name="address_type" nolabel="1" widget="statusbar" options="{'clickable': '1'}" style="padding-left: 80px !important"/>
+                        <field name="full_address" invisible="full_address == False" nolabel="1"/>
+                        <field name="custom_address" invisible="address_type != 'custom'" nolabel="1"/>
+                        <field name="provider_id" required="state not in ('cancel','draft')" readonly="state == 'done'" string="Payment Method" domain="[('code','=','custom')]" widget="selection"/>
+                    </group>
+                </xpath>
+
+                <xpath expr="//field[@name='tax_totals']" position="before">
+                    <field name="total_deposit" string="Deposit" readonly="1" invisible="total_deposit == 0.0"/>
+                    <field name="total_point" string="Used Point" readonly="1" invisible="total_point == 0.0"/>
+                    <field name="total_discount" string="Discount" readonly="1" invisible="total_discount == 0.0"/>
+                    <field name="total_ongkir" string="Ongkir" readonly="1" invisible="total_ongkir == 0.0"/>
                 </xpath>
                 <xpath expr="//div[@class='oe_chatter']" position="attributes">
                     <attribute name="invisible">1</attribute>
@@ -156,10 +252,51 @@
             </field>
         </record>
 
+        <record id="bestindo_view_sales_order_filter" model="ir.ui.view">
+            <field name="name">bp.sale.order.search.inherit</field>
+            <field name="model">sale.order</field>
+            <field name="inherit_id" ref="sale.view_sales_order_filter"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='name']" position="attributes">
+                    <attribute name="string">Transaction</attribute>
+                </xpath>
+                <xpath expr="//field[@name='user_id']" position="attributes">
+                    <attribute name="invisible">1</attribute>
+                </xpath>
+                <xpath expr="//field[@name='team_id']" position="attributes">
+                    <attribute name="invisible">1</attribute>
+                </xpath>
+                <xpath expr="//filter[@name='salesperson']" position="attributes">
+                    <attribute name="invisible">1</attribute>
+                </xpath>
+                <xpath expr="//filter[@name='salesperson']" position="before">
+                    <filter string="State" name="state" domain="[]" context="{'group_by': 'state'}"/>
+                    <filter string="Payment State" name="payment_state" domain="[]" context="{'group_by': 'payment_state'}"/>
+                </xpath>
+            </field>
+        </record>
+
+        <record id="bestindo_sale_order_view_search_inherit_sale" model="ir.ui.view">
+            <field name="name">bp.sale.order.search.inherit</field>
+            <field name="model">sale.order</field>
+            <field name="inherit_id" ref="sale.sale_order_view_search_inherit_sale"/>
+            <field name="arch" type="xml">
+                <xpath expr="//filter[@name='my_sale_orders_filter']" position="attributes">
+                    <attribute name="invisible">1</attribute>
+                </xpath>
+                <xpath expr="//filter[@name='to_invoice']" position="attributes">
+                    <attribute name="invisible">1</attribute>
+                </xpath>
+                <xpath expr="//filter[@name='upselling']" position="attributes">
+                    <attribute name="invisible">1</attribute>
+                </xpath>
+            </field>
+        </record>
+
         <record id="bp_action_orders" model="ir.actions.act_window">
         <field name="name">Transaction</field>
         <field name="res_model">sale.order</field>
-        <field name="view_mode">tree,kanban,form,calendar,pivot,graph</field>
+        <field name="view_mode">tree,kanban,form,calendar</field>
         <field name="search_view_id" ref="sale.sale_order_view_search_inherit_sale"/>
         <field name="context">{'disable_cancel_warning':True}</field>
         <field name="domain">[]</field>

@@ -6,6 +6,12 @@
             <field name="model">account.move</field>
             <field name="inherit_id" ref="account.view_move_form"/>
             <field name="arch" type="xml">
+                <xpath expr="//field[@name='name']" position="attributes">
+                    <attribute name="invisible">1</attribute>
+                </xpath>
+                <xpath expr="//field[@name='name']" position="after">
+                    <field name="name2" readonly="payment_state !='not_paid'"/>
+                </xpath>
                 <xpath expr="//page[@name='other_info']" position="attributes">
                     <attribute name="invisible">1</attribute>
                 </xpath>
@@ -34,14 +40,30 @@
                 <xpath expr="//field[@name='l10n_id_replace_invoice_id']" position="attributes">
                     <attribute name="invisible">1</attribute>
                 </xpath>
+                <xpath expr="//field[@name='sale_order_count']" position="attributes">
+                    <attribute name="string">Transaction</attribute>
+                </xpath>
                 <xpath expr="//button[@name='action_register_payment']" position="attributes">
-                    <attribute name="invisible">1</attribute>
+                    <attribute name="string">Make Payment</attribute>
+                    <attribute name="invisible">0</attribute>
+                    <attribute name="context">{'dont_redirect_to_payments': True, 'display_account_trust': True, 'bp_deposit_manual': True}</attribute>
+                </xpath>
+                <xpath expr="//button[@name='button_cancel']" position="replace"/>
+                    
+                <xpath expr="//button[@name='button_cancel']" position="replace">
+                    <button name="button_cancel" type="object" string="Cancel" class="bp-button-red" invisible="not id or state != 'draft' or move_type == 'entry'"/>
                 </xpath>
                 <xpath expr="//button[@name='action_reverse']" position="attributes">
-                    <attribute name="invisible">1</attribute>
+                    <attribute name="string">Invoice Return</attribute>
+                    <attribute name="invisible">0</attribute>
+                    <attribute name="class">bp-button-yellow</attribute>
                 </xpath>
                 <xpath expr="//button[@name='preview_invoice']" position="attributes">
                     <attribute name="invisible">1</attribute>
+                </xpath>
+                <xpath expr="//field[@name='partner_id']" position="after">
+                    <field name="ref" string="Reason" invisible="move_type != 'out_refund'"/>
+                    <field name="is_credit" readonly="1" invisible="is_credit == False"/>
                 </xpath>
                 <xpath expr="//div[@class='oe_chatter']" position="attributes">
                     <attribute name="invisible">1</attribute>
@@ -54,6 +76,12 @@
             <field name="model">account.move</field>
             <field name="inherit_id" ref="account.view_out_invoice_tree"/>
             <field name="arch" type="xml">
+                <xpath expr="//field[@name='name']" position="attributes">
+                    <attribute name="optional">hide</attribute>
+                </xpath>
+                <xpath expr="//field[@name='name']" position="after">
+                    <field name="name2"/>
+                </xpath>
                 <xpath expr="//field[@name='invoice_date_due']" position="attributes">
                     <attribute name="column_invisible">1</attribute>
                 </xpath>
@@ -70,7 +98,13 @@
                     <attribute name="column_invisible">1</attribute>
                 </xpath>
                 <xpath expr="//field[@name='payment_state']" position="attributes">
-                    <attribute name="column_invisible">1</attribute>
+                    <attribute name="column_invisible">0</attribute>
+                </xpath>
+                <xpath expr="//field[@name='amount_total_signed']" position="before">
+                    <field name="amount_residual_signed" string="Total Not Paid"/>
+                </xpath>
+                <xpath expr="//field[@name='state']" position="after">
+                    <field name="is_credit" string="Credit"/>
                 </xpath>
             </field>
         </record>

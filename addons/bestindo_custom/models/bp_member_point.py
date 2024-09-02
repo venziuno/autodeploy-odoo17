@@ -13,3 +13,5 @@ class BpMemberPoint(models.Model):
 	sale_id = fields.Many2one('sale.order','Order')
 	point = fields.Integer('Point')
 	partner_id = fields.Many2one('res.partner','Partner')
+	product_id = fields.Many2one('product.product','Product')
+	product_tmpl_id = fields.Many2one('product.template','Product Template')

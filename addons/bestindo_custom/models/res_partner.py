@@ -3,12 +3,12 @@ from odoo import api, fields, models
 import uuid
 from odoo.exceptions import UserError, ValidationError
 from odoo import api, fields, models, tools, _
-# from validate_email import validate_email #pip install validate_email && pip install py3DNS
+#from validate_email import validate_email #pip install validate_email && pip install py3DNS
 
 class ResPartner(models.Model):
 	_inherit = 'res.partner'
 
-	total_deposit = fields.Float('Total Deposit')
+	total_deposit = fields.Float('Total Deposit',compute='_compute_total_deposit')
 	loyalty_point = fields.Integer('Loyalty Point')
 	registration_id = fields.Char('Registration ID')
 	payment_provider_ids = fields.Many2many('payment.provider','bp_payment_prov_relation','payment_id','partner_id','Payment Provider')
@@ -34,10 +34,30 @@ class ResPartner(models.Model):
 	partner_latitude2 = fields.Float('Latitude 2', digits=(10, 7))
 	partner_longitude2 = fields.Float('Longitude 2', digits=(10, 7))
 
-	point_count = fields.Integer('Point')
+	point_count = fields.Integer('Point',compute='_compute_point_count')
 	deposit_count = fields.Integer('Deposit')
+	is_negotiation = fields.Boolean('Allow Negotiation', default=True)
 
-	segment_ids = fields.Many2many('product.category','bp_categ_relation','categ_id','partner_id','Segment')
+	segment_ids = fields.Many2many('product.segment','bp_segment_relation','segment_id','partner_id','Segment')
+
+	driver_id_no = fields.Char('ID Confirmation')
+	driver_sim = fields.Char('No. SIM') 
+	driver_merk = fields.Char('Merk Kendaraan')
+	driver_type = fields.Char('Tipe Kendaraan')
+	driver_no = fields.Char('No. Plat Kendaraan')
+	driver_color = fields.Char('Warna Kendaraan')
+
+	def _compute_total_deposit(self):
+		for rec in self:
+			deposit_ids = self.env['bp.deposit'].search([('partner_id','=',rec.id),('state','in',['done','used'])])
+			total = sum(list(x.total for x in deposit_ids))
+			rec.total_deposit = total
+
+	def _compute_point_count(self):
+		for rec in self:
+			point_ids = self.env['bp.member.point'].search([('partner_id','=',rec.id)])
+			point = sum(list(x.point for x in point_ids))
+			rec.point_count = point
 
 	@api.model
 	def create(self, vals):
@@ -109,21 +129,24 @@ class ResPartner(models.Model):
 		else:
 			result['user_type'] = 'customer'
 		result['company_type'] = 'person'
+		state_id = self.env['res.country.state'].search([('name','=','Kepulauan Riau')], limit=1)
+		result['state_id'] = state_id.id
+		result['state_2_id'] = state_id.id
 
 		return result
 
-	@api.constrains('email')
-	def _check_email(self):
-		"""
-		Check the email is valid or not
-		"""
-		if self.email:
-			is_valid = validate_email(self.email, check_mx=False, verify=True,
-									  debug=False, smtp_timeout=10)
-			if is_valid is not True:
-				raise ValidationError(_('Anda hanya dapat menggunakan alamat email yang valid.'
-										'Alamat email “%s” tidak valid '
-										'atau tidak ada') % self.email)
+	# @api.constrains('email')
+	# def _check_email(self):
+	# 	"""
+	# 	Check the email is valid or not
+	# 	"""
+	# 	if self.email:
+	# 		is_valid = validate_email(self.email, check_mx=False, verify=True,
+	# 								  debug=False, smtp_timeout=10)
+	# 		if is_valid is not True:
+	# 			raise ValidationError(_('Anda hanya dapat menggunakan alamat email yang valid.'
+	# 									'Alamat email “%s” tidak valid '
+	# 									'atau tidak ada') % self.email)
 
 	def action_view_history_point(self):
 		ids = []
@@ -171,18 +194,54 @@ class ResPartner(models.Model):
 		}
 		return action
 
+	def action_view_favorite_products(self):
+		fav_ids = self.env['bp.favorite.product'].search([('partner_id','=',self.id)])
+		action = {
+			"type": "ir.actions.act_window",
+			"view_mode": "tree",
+			"name": _("Favorite Products"),
+			"res_model": "bp.favorite.product",
+			"domain": [('id','in', fav_ids.ids)],
+			"target": "current",
+		}
+		return action
+
 	def create_users(self):
 		search_email = self.search([('email','=',self.email),('id','!=',self.id)])
 		if search_email:
 			raise ValidationError(_('Email sudah digunakan oleh user lain.'))
 		wizard_obj = self.env['portal.wizard']
+		username = ''
+		if '@' not in self.email:
+			username = self.email
 		wizard_id = wizard_obj.create({
 			'user_ids': [(0, 0, {
 				'partner_id': self.id,
-				'email': self.email
+				'email': self.email if '@' in self.email else f"{self.email}@bestindo.com"
 			})]
 		})
 		wizard_id.user_ids.action_grant_access()
+		if not self.password:
+			raise UserError(_('Password mohon di isi.'))
+
+		user_values = {'password': self.password}
+		if username:
+			user_values['login'] = username
+			self.email = username
+		self.user_ids.write(user_values)
+
+		if self.user_type == 'driver':
+			roles_id = self.env['bp.users.roles'].search([('name','=','Driver')], limit=1)
+			internal_group = self.env.ref('base.group_user')
+			sales_group = self.env.ref('sales_team.group_sale_manager')
+			inventory_group = self.env.ref('stock.group_stock_manager')
+			invoicing_group = self.env.ref('account.group_account_manager')
+
+			group_ids = [internal_group.id,sales_group.id,inventory_group.id,invoicing_group.id]
+			self.user_ids.with_context(is_driver=True).write({
+				'groups_id': [(6, 0, group_ids)],
+				'roles_id': roles_id.id,
+			})
 		return True
 
 	def _full_address(self):

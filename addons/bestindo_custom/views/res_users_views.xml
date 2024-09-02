@@ -16,7 +16,7 @@
                     <attribute name="invisible">1</attribute>
                 </xpath>
                 <xpath expr="//page[@name='access_rights']" position="attributes">
-                    <attribute name="invisible">0</attribute>
+                    <attribute name="invisible">1</attribute>
                 </xpath>
                 <xpath expr="//page[@name='preferences']" position="attributes">
                     <attribute name="invisible">1</attribute>
@@ -31,8 +31,9 @@
                     <page string="Roles" name="bp_roles">
                         <group>
                             <group string="Roles">
-                                <field name="roles_id" required="1" widget="selection"/>
+                                <field name="roles_id" required="not share" widget="selection"/>
                                 <field name="bp_groups_id" invisible="1"/>
+                                <field name="token_api" invisible="1"/>
                             </group>
                         </group>
                     </page>
