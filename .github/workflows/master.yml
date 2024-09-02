@@ -10,8 +10,8 @@ env:
   IMAGE_NAME: venziuno
   PROJECT_BRANCH: ${{ github.ref_name }}
   NAMESPACES: kube-bestindo
-  DEPLOYMENT_NAME: odoo
-  CONTAINER_NAME: odoo
+  DEPLOYMENT_NAME: odoo-deployment
+  CONTAINER_NAME: odoo-deployment
 
 jobs:
   build:
