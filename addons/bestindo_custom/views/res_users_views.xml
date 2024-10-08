@@ -40,5 +40,43 @@
                 </xpath>
             </field>
         </record>
+
+        <record id="view_bestindo_users_form_simple_modif" model="ir.ui.view">
+            <field name="name">res.users.menu.form</field>
+            <field name="model">res.users</field>
+            <field name="inherit_id" ref="base.view_users_form_simple_modif"/>
+            <field name="arch" type="xml">
+                <xpath expr="//page[@name='preferences_page']" position="attributes">
+                    <attribute name="invisible">1</attribute>
+                </xpath>
+                <xpath expr="//page[@name='preferences_page']" position="after">
+                    <page string="Preferences" name="bestindo_preferences">
+                        <group>
+                            <group>
+                                <separator string="Setting"/>
+                                <field name="email" widget="email"/>
+                                <label for="lang"/>
+                                <div class="o_row">
+                                    <field name="lang" required="1" readonly="0"/>
+                                    <button type="action" name="%(base.action_view_base_language_install)d" class="oe_edit_only btn-sm btn-link mb4 fa fa-globe" aria-label="Add a language" groups="base.group_system" title="Add a language"/>
+                                </div>
+                                <field name="tz" widget="timezone_mismatch" options="{'tz_offset_field': 'tz_offset'}" readonly="0"/>
+                                <field name="tz_offset" invisible="1"/>
+                            </group>
+                            <group>
+                                <separator string="System"/>
+                                <!-- <field name="chatter_position" required="1"/> -->
+                                <field name="sidebar_type" required="1"/>
+                                <field name="dialog_size" required="1"/>
+                            </group>
+
+                        </group>
+                    </page>
+                </xpath>
+                <xpath expr="//page[@name='page_account_security']/group[3]" position="attributes">
+                    <attribute name="invisible">1</attribute>
+                </xpath>
+            </field>
+        </record>
     </data>
 </odoo>

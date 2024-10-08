@@ -5,7 +5,19 @@
         <record id="sale.product_template_action" model="ir.actions.act_window">
             <field name="view_mode">kanban,tree,form</field>
             <field name="domain">[('detailed_type','!=','service')]</field>
+            <field name="limit">50</field>
             <field name="context">{"sale_multi_pricelist_product_template": 1}</field>
+        </record>
+
+        <record id="bp_product_template_kanban_view" model="ir.ui.view">
+            <field name="name">bp.product.template.product.kanban</field>
+            <field name="model">product.template</field>
+            <field name="inherit_id" ref="product.product_template_kanban_view"/>
+            <field name="arch" type="xml">
+                <xpath expr="//kanban" position="attributes">
+                    <attribute name="import">0</attribute>
+                </xpath>
+            </field>
         </record>
 
         <record id="bestindo_account_product_template_form_view" model="ir.ui.view">
@@ -127,7 +139,24 @@
                 <xpath expr="//field[@name='default_code']" position="attributes">
                     <attribute name="invisible">1</attribute>
                 </xpath>
+                <xpath expr="//button[@name='%(product.product_variant_action)d']" position="attributes">
+                    <attribute name="invisible">1</attribute>
+                </xpath>
+                <xpath expr="//button[@name='%(product.product_variant_action)d']" position="after">
+                    <button name="action_bp_open_variants" type="object"
+                        icon="fa-sitemap" class="oe_stat_button"
+                        invisible="product_variant_count &lt;= 1"
+                        groups="product.group_product_variant">
+                    <field string="Variants" name="product_variant_count" widget="statinfo" />
+                </button>
+                </xpath>
                 <xpath expr="//field[@name='barcode']" position="attributes">
+                    <attribute name="invisible">1</attribute>
+                </xpath>
+                <xpath expr="//field[@name='attribute_line_ids']/tree/field[@name='attribute_id']" position="attributes">
+                    <attribute name="options">{'no_create_edit': True}</attribute>
+                </xpath>
+                <xpath expr="//field[@name='attribute_line_ids']/tree/button[@name='action_open_attribute_values']" position="attributes">
                     <attribute name="invisible">1</attribute>
                 </xpath>
             </field>
@@ -138,6 +167,12 @@
             <field name="model">product.template</field>
             <field name="inherit_id" ref="product.product_template_tree_view"/>
             <field name="arch" type="xml">
+                <xpath expr="//tree" position="attributes">
+                    <attribute name="import">0</attribute>
+                </xpath>
+                <xpath expr="//tree" position="attributes">
+                    <attribute name="export_xlsx">0</attribute>
+                </xpath>
                 <xpath expr="//button[@name='action_open_label_layout']" position="attributes">
                     <attribute name="invisible">1</attribute>
                 </xpath>
@@ -223,6 +258,17 @@
             <field name="domain">[('detailed_type','!=','service')]</field>
         </record>
 
+        <record id="bp_product_kanban_view" model="ir.ui.view">
+            <field name="name">bp.product.product.kanban</field>
+            <field name="model">product.product</field>
+            <field name="inherit_id" ref="product.product_kanban_view"/>
+            <field name="arch" type="xml">
+                <xpath expr="//kanban" position="attributes">
+                    <attribute name="import">0</attribute>
+                </xpath>
+            </field>
+        </record>
+
         <record id="bestindo_product_normal_form_view" model="ir.ui.view">
             <field name="name">bp.product.product.view.form.inherit.all.in.one.sales.kit</field>
             <field name="model">product.product</field>
@@ -239,6 +285,12 @@
             <field name="model">product.product</field>
             <field name="inherit_id" ref="product.product_product_tree_view"/>
             <field name="arch" type="xml">
+                <xpath expr="//tree" position="attributes">
+                    <attribute name="import">0</attribute>
+                </xpath>
+                <xpath expr="//tree" position="attributes">
+                    <attribute name="export_xlsx">0</attribute>
+                </xpath>
                 <xpath expr="//button[@name='action_open_label_layout']" position="attributes">
                     <attribute name="invisible">1</attribute>
                 </xpath>
@@ -317,6 +369,12 @@
             <field name="model">product.category</field>
             <field name="inherit_id" ref="product.product_category_list_view"/>
             <field name="arch" type="xml">
+                <xpath expr="//tree" position="attributes">
+                    <attribute name="import">0</attribute>
+                </xpath>
+                <xpath expr="//tree" position="attributes">
+                    <attribute name="export_xlsx">0</attribute>
+                </xpath>
                 <xpath expr="//field[@name='display_name']" position="attributes">
                     <attribute name="string">Category</attribute>
                 </xpath>
@@ -395,7 +453,7 @@
             <field name="name">product.segment.tree</field>
             <field name="model">product.segment</field>
             <field name="arch" type="xml">
-            <tree>
+            <tree import="0" export_xlsx="0">
                 <field name="icon_img" widget="image" string="Icon" options="{'size': [50, 50]}"/>
                 <field name="name" string="Segment"/>
             </tree>

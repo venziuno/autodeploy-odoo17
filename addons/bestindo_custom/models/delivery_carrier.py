@@ -8,6 +8,11 @@ class DeliveryCarrier(models.Model):
 
 	ongkir_ids = fields.One2many('bp.ongkir', 'carrier_id', 'Ongkir')
 	is_cod = fields.Boolean('COD')
+	pickup_address = fields.Char('Pickup Address')
+	address_type = fields.Selection([
+		('toko','Toko'),
+		('gudang','Gudang')
+	], string='Type', default='toko')
 
 	@api.model
 	def default_get(self, fields):

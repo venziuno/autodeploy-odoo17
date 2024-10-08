@@ -58,6 +58,12 @@
                     <attribute name="invisible">0</attribute>
                     <attribute name="class">bp-button-yellow</attribute>
                 </xpath>
+                <xpath expr="//button[@name='action_invoice_sent']" position="attributes">
+                    <attribute name="invisible">1</attribute>
+                </xpath>
+                <xpath expr="//button[@name='action_invoice_sent']" position="after">
+                    <button name="invoice_report2pdf" type="object" class="oe_highlight" string="Print"/>
+                </xpath>
                 <xpath expr="//button[@name='preview_invoice']" position="attributes">
                     <attribute name="invisible">1</attribute>
                 </xpath>

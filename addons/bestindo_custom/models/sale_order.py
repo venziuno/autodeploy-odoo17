@@ -4,6 +4,7 @@ import uuid
 from odoo.exceptions import UserError, ValidationError
 from odoo import api, fields, models, tools, _
 from datetime import datetime
+import itertools
 
 SALE_ORDER_STATE = [
 	('draft', "Draft"),
@@ -37,6 +38,9 @@ class SaleOrder(models.Model):
 	total_point = fields.Integer('Point')
 	total_discount = fields.Float('Discount',compute='_compute_total_discount')
 	total_ongkir = fields.Float('Ongkir',compute='_compute_total_ongkir')
+	is_cod = fields.Boolean('COD')
+	is_pickup = fields.Boolean('Pickup')
+	point_ids = fields.One2many('bp.member.point','sale_id','Points')
 
 	#Order Info
 	payment_date = fields.Date('Payment Date',compute='_compute_payment_info',store=True)
@@ -56,6 +60,7 @@ class SaleOrder(models.Model):
 		('terkirim','Diterima')
 	],string="Order Status",compute='_compute_delivery_info')
 	date_packed = fields.Datetime('Date Packed')
+	date_received = fields.Datetime('Date Received')
 	recipient_name = fields.Char('Recipient Name',compute='_compute_delivery_info')
 
 	bp_term_id = fields.Many2one('bp.term','Term')
@@ -132,6 +137,8 @@ class SaleOrder(models.Model):
 			final_promotion_price = 0
 			for line in rec.order_line:
 				promotion_price = 0
+				if line.product_id.detailed_type == 'service':
+					continue
 				if line.product_id:
 					promotion_line_id = self.env['bp.promotion.line'].search([('product_id','=',line.product_id.id),('promotion_id','!=',False),('promotion_id.state','=','open')], limit=1, order='id desc')
 					if promotion_line_id:
@@ -140,29 +147,36 @@ class SaleOrder(models.Model):
 							if (datetime.now() > promotion_id.start_date and datetime.now() < promotion_id.end_date) and promotion_id.state == 'open':
 								if promotion_id.disc_type == 'flat':
 									promotion_price = line.product_uom_qty*promotion_id.disc_flat
+									line.disc_flat = promotion_id.disc_flat
 								if promotion_id.disc_type == 'percent':
 									promotion_price = line.product_uom_qty*(line.product_id.lst_price*promotion_id.disc_percent)
+									line.disc_percent = promotion_id.disc_percent
 						else:
 							if promotion_id.disc_type == 'flat':
 								promotion_price = line.product_uom_qty*promotion_id.disc_flat
+								line.disc_flat = promotion_id.disc_flat
 							if promotion_id.disc_type == 'percent':
 								promotion_price = line.product_uom_qty*(line.product_id.lst_price*promotion_id.disc_percent)
+								line.disc_percent = promotion_id.disc_percent
 
 					promotion_all_prod_id = self.env['bp.promotion'].search([('is_all_product','=',True),('state','=','open')], limit=1, order='id desc')
 					if promotion_all_prod_id:
 						if promotion_all_prod_id.start_date and promotion_all_prod_id.end_date:
 							if (datetime.now() > promotion_all_prod_id.start_date and datetime.now() < promotion_all_prod_id.end_date):
-								if promotion_id.disc_type == 'flat':
-									promotion_price = line.product_uom_qty*promotion_id.disc_flat
-								if promotion_id.disc_type == 'percent':
-									promotion_price = line.product_uom_qty*(line.product_id.lst_price*promotion_id.disc_percent)
+								if promotion_all_prod_id.disc_type == 'flat':
+									promotion_price = line.product_uom_qty*promotion_all_prod_id.disc_flat
+									line.disc_flat = promotion_all_prod_id.disc_flat
+								if promotion_all_prod_id.disc_type == 'percent':
+									promotion_price = line.product_uom_qty*(line.product_id.lst_price*promotion_all_prod_id.disc_percent)
+									line.disc_percent = promotion_all_prod_id.disc_percent
 						else:
-							if promotion_id.disc_type == 'flat':
-								promotion_price = line.product_uom_qty*promotion_id.disc_flat
-							if promotion_id.disc_type == 'percent':
-								promotion_price = line.product_uom_qty*(line.product_id.lst_price*promotion_id.disc_percent)
+							if promotion_all_prod_id.disc_type == 'flat':
+								promotion_price = line.product_uom_qty*promotion_all_prod_id.disc_flat
+								line.disc_flat = promotion_all_prod_id.disc_flat
+							if promotion_all_prod_id.disc_type == 'percent':
+								promotion_price = line.product_uom_qty*(line.product_id.lst_price*promotion_all_prod_id.disc_percent)
+								line.disc_percent = promotion_all_prod_id.disc_percent
 				final_promotion_price += promotion_price
-
 			order_id = rec._origin.id or rec.id
 			if discount_product_id and final_promotion_price:
 				discount_line_id = self.env['sale.order.line'].search([('order_id','=',order_id or rec.id),('product_id','=',discount_product_id.id)], limit=1, order='id desc')
@@ -225,7 +239,7 @@ class SaleOrder(models.Model):
 	def get_data(self):
 
 		"""To get data to the sales dashboard."""
-		domain = [('user_id', '=', self.env.user.id)]
+		domain = []
 		quotation = self.env['sale.order'].search(
 			domain + [('state', '=', 'draft')])
 		my_sale_order_templates = self.env['sale.order'].search(
@@ -234,10 +248,11 @@ class SaleOrder(models.Model):
 			domain + [('state', '=', 'sent')])
 		quotation_cancel = self.env['sale.order'].search(
 			domain + [('state', '=', 'cancel')])
-		customers = self.env['res.partner'].search([('user_type', '=', 'customer'),('is_another_address','=',False)])
+		customers = self.env['res.partner'].search([('user_type', '=', 'customer'),('is_another_address','=',False),('id','not in',[1,3])])
 		to_invoice = self.env['sale.order'].search(
 			domain + [('invoice_status', '=', 'to invoice')])
 		products = self.env['product.template'].search([('detailed_type','!=','service')])
+		
 		return {
 			'quotation': len(quotation),
 			'my_sale_order_templates': len(my_sale_order_templates),
@@ -255,15 +270,12 @@ class SaleOrder(models.Model):
 		dashboard."""
 		domain = []
 		if start_date and end_date:
-			domain = [('user_id', '=', self.env.user.id),
-					  ('date_order', '>=', start_date),
+			domain = [('date_order', '>=', start_date),
 					  ('date_order', '<=', end_date)]
 		elif start_date:
-			domain = [('user_id', '=', self.env.user.id),
-					  ('date_order', '>=', start_date)]
+			domain = [('date_order', '>=', start_date)]
 		elif end_date:
-			domain = [('user_id', '=', self.env.user.id),
-					  ('date_order', '<=', end_date)]
+			domain = [('date_order', '<=', end_date)]
 
 		quotation = self.env['sale.order'].search(
 			domain + [('state', '=', 'draft')])
@@ -273,10 +285,11 @@ class SaleOrder(models.Model):
 			domain + [('state', '=', 'sent')])
 		quotation_cancel = self.env['sale.order'].search(
 			domain + [('state', '=', 'cancel')])
-		customers = self.env['res.partner'].search([('user_type', '=', 'customer'),('is_another_address','=',False)])
+		customers = self.env['res.partner'].search([('user_type', '=', 'customer'),('is_another_address','=',False),('id','not in',[1,3])])
 		products = self.env['product.template'].search([('detailed_type','!=','service')])
 		to_invoice = self.env['sale.order'].search(
 			domain + [('invoice_status', '=', 'to invoice')])
+
 		return {
 			'quotation': len(quotation),
 			'my_sale_order_templates': len(my_sale_order_templates),
@@ -285,6 +298,154 @@ class SaleOrder(models.Model):
 			'customers': len(customers),
 			'products': len(products),
 			'to_invoice': len(to_invoice),
+		}
+
+	@api.model
+	def get_lead_customer(self, start_date=False, end_date=False):
+		"""Returns customer data to the graph of dashboard"""
+		lead_template = {}
+		sale = {}
+		domain = [('state','in',['sale','done'])]
+		if start_date and end_date:
+			domain += [('date_order', '>=', start_date),
+					  ('date_order', '<=', end_date)]
+		elif start_date:
+			domain += [('date_order', '>=', start_date)]
+		elif end_date:
+			domain += [('date_order', '<=', end_date)]
+		
+		partner_id = self.env['res.partner'].sudo().search([('user_type','=','customer'),('is_another_address','=',False)])
+		sale_ids = self.env['sale.order'].sudo().search(domain)
+		vals = sale_ids.mapped('partner_id').ids
+		for record in partner_id:
+			if record.id in vals:
+				total_sale = len(sale_ids.filtered(lambda p: p.partner_id.id == record.id))
+				sale.update({record: total_sale})
+		sort = dict(
+			sorted(sale.items(), key=lambda item: item[1], reverse=True))
+		out = dict(itertools.islice(sort.items(), 10))
+		for count in out:
+			lead_template[count.name] = out[count]
+		return {
+			'lead_templates': lead_template,
+		}
+
+	@api.model
+	def get_lead_product(self, start_date=False, end_date=False):
+		"""Returns product data to the graph of dashboard"""
+		lead_template = {}
+		sale = {}
+		domain = [('order_id.state','in',['sale','done'])]
+		if start_date and end_date:
+			domain += [('order_id.date_order', '>=', start_date),
+					  ('order_id.date_order', '<=', end_date)]
+		elif start_date:
+			domain += [('order_id.date_order', '>=', start_date)]
+		elif end_date:
+			domain += [('order_id.date_order', '<=', end_date)]
+		# product_id = self.env['product.template'].search([('detailed_type','!=','service')])
+		product_id = self.env['product.product'].search([('detailed_type','!=','service')])
+		sale_line_ids = self.env['sale.order.line'].sudo().search(domain)
+		vals = sale_line_ids.mapped('product_id').ids
+		for record in product_id:
+			if record.id in vals:
+				sales_count = sum(sale_line_ids.filtered(lambda p: p.product_id.id == record.id).mapped('product_uom_qty'))
+				sale.update({record: sales_count})
+		sort = dict(
+			sorted(sale.items(), key=lambda item: item[1], reverse=True))
+		out = dict(itertools.islice(sort.items(), 10))
+		for product in out:
+			full_name = product.name
+			if product.product_template_variant_value_ids:
+				variant_name = ' - '.join(x.name for x in product.product_template_variant_value_ids)
+				full_name = f"{product.name} ({variant_name})"
+			lead_template[full_name] = out[product]
+		return {
+			'lead_templates': lead_template,
+		}
+	
+	@api.model
+	def get_least_sold(self, start_date=False, end_date=False):
+		"""Returns least sold product data to the graph of dashboard"""
+		lead_template = {}
+		sale = {}
+		domain = [('order_id.state','in',['sale','done'])]
+		if start_date and end_date:
+			domain += [('order_id.date_order', '>=', start_date),
+					  ('order_id.date_order', '<=', end_date)]
+		elif start_date:
+			domain += [('order_id.date_order', '>=', start_date)]
+		elif end_date:
+			domain += [('order_id.date_order', '<=', end_date)]
+		# product_id = self.env['product.template'].search([('detailed_type','!=','service')])
+		product_id = self.env['product.product'].search([('detailed_type','!=','service')])
+		sale_line_ids = self.env['sale.order.line'].sudo().search(domain)
+		vals = sale_line_ids.mapped('product_id').ids
+		for record in product_id:
+			if record.id in vals:
+				sales_count = sum(sale_line_ids.filtered(lambda p: p.product_id.id == record.id).mapped('product_uom_qty'))
+				sale.update({record: sales_count})
+		sort = dict(
+			sorted(sale.items(), key=lambda item: item[1], reverse=False))
+		out = dict(itertools.islice(sort.items(), 10))
+		for product in out:
+			full_name = product.name
+			if product.product_template_variant_value_ids:
+				variant_name = ' - '.join(x.name for x in product.product_template_variant_value_ids)
+				full_name = f"{product.name} ({variant_name})"
+			lead_template[full_name] = out[product]
+		return {
+			'lead_templates': lead_template,
+		}
+
+	@api.model
+	def get_lead_order(self, start_date=False, end_date=False):
+		"""Returns lead sale order data to the graph of dashboard"""
+		lead_template = {}
+		sale = {}
+		domain = [('state','in',['sale','done'])]
+		if start_date and end_date:
+			domain += [('date_order', '>=', start_date),
+					  ('date_order', '<=', end_date)]
+		elif start_date:
+			domain += [('date_order', '>=', start_date)]
+		elif end_date:
+			domain += [('date_order', '<=', end_date)]
+		order_id = self.env['sale.order'].search(domain)
+		for record in order_id:
+			sale.update({record: record.amount_total})
+		sort = dict(
+			sorted(sale.items(), key=lambda item: item[1], reverse=True))
+		out = dict(itertools.islice(sort.items(), 10))
+		for order in out:
+			lead_template[order.name] = out[order]
+		return {
+			'lead_templates': lead_template,
+		}
+
+	@api.model
+	def get_my_monthly_comparison(self, start_date=False, end_date=False):
+		"""Returns my monthly sale count data to the graph of dashboard"""
+		lead_template = {}
+		# domain = [('state','in',['sale','done'])]
+		domain = []
+		if start_date and end_date:
+			domain += [('date_order', '>=', start_date),
+					  ('date_order', '<=', end_date)]
+		elif start_date:
+			domain += [('date_order', '>=', start_date)]
+		elif end_date:
+			domain += [('date_order', '<=', end_date)]
+		sales_order = self.env['sale.order'].search(domain)
+		
+		list = [rec.date_order.month for rec in sales_order]
+		for i in range(1, 13):
+			count = list.count(i)
+			lead_template.update({
+				i: count
+			})
+		return {
+			'lead_templates': lead_template,
 		}
 	#End of Dashboard function
 
@@ -370,7 +531,7 @@ class SaleOrder(models.Model):
 								'sale_id': order.id,
 								'product_tmpl_id': product_tmpl_id.id,
 								'date': order.date_order,
-								'point': (product_tmpl_id.percent_point*product_tmpl_id.lst_price)*line.product_uom_qty,
+								'point': (product_tmpl_id.percent_point*product_tmpl_id.list_price)*line.product_uom_qty,
 								'partner_id':order.partner_id.id
 							})
 
@@ -424,7 +585,7 @@ class SaleOrder(models.Model):
 
 
 		# if self.provider_id.is_deposit or self.provider_id.is_bank: #Open if Transfer Image required
-		if self.provider_id.is_deposit:	
+		if self.provider_id.is_deposit or self.provider_id.is_cash:	
 			context = dict(self.env.context)
 			context.update({'active_id': invoice.id,'active_model':'account.move','active_ids': [invoice.id]})
 			reg_id = invoice.action_register_payment()
@@ -575,8 +736,27 @@ class SaleOrder(models.Model):
 
 		return True
 
+	@api.onchange('provider_id')
+	def _onchange_provider_id(self):
+		if self.provider_id:
+			if self.provider_id.is_cod:
+				self.is_cod = True
+			else:
+				self.is_cod = False
+
+	@api.onchange('carrier_id')
+	def _onchange_carrier_id_pickup(self):
+		if self.carrier_id:
+			if self.carrier_id.is_cod:
+				self.is_pickup = True
+			else:
+				self.is_pickup = False
+
 class SaleOrderLine(models.Model):
 	_inherit = 'sale.order.line'
+
+	disc_flat = fields.Float('Discount Flat')
+	disc_percent = fields.Float('Discount Percent')
 
 	# @api.depends('product_id', 'product_uom', 'product_uom_qty')
 	# def _compute_price_unit(self):
@@ -598,3 +778,41 @@ class SaleOrderLine(models.Model):
 	# 				),
 	# 				fiscal_position=line.order_id.fiscal_position_id,
 	# 			)
+
+	@api.model
+	def create(self, vals):
+		context = self.env.context
+		product_id= vals.get('product_id')
+		uom_id = vals.get('product_uom')
+		if product_id:
+			product_variant = self.env['product.product'].browse(product_id)
+			product_uom = self.env['uom.uom'].browse(uom_id)
+			if product_variant.detailed_type != 'service':
+				if vals.get('price_unit'):
+					if vals.get('price_unit') < 0:
+						raise ValidationError("Error: The price unit cannot be negative for this products.")
+				if vals.get('product_uom_qty'):
+					if vals.get('product_uom_qty') < product_uom.rounding:
+						raise UserError(f"{vals.get('name')}\nCan't set Quantity less than [{product_uom.rounding}] Rounding Precision on Unit: {product_uom.name}")
+
+		result = super(SaleOrderLine, self.with_context(context)).create(vals)
+		return result
+
+	@api.model
+	def write(self, vals):
+		context = self.env.context
+		if self.product_id:
+			if self.product_id.detailed_type != 'service':
+				if vals.get('price_unit') :
+					if vals.get('price_unit') < 0:
+						raise ValidationError("Error: The price unit cannot be negative for this products.")
+				if vals.get('product_uom_qty'):
+					if vals.get('product_uom_qty') < self.product_uom.rounding:
+						raise ValidationError(f"{self.name}\nCan't set Quantity less than [{self.product_uom.rounding}] Rounding Precision on Unit: {self.product_uom.name}")
+			else:
+				if vals.get('product_uom_qty'):
+					if vals.get('product_uom_qty') != 1:
+						raise ValidationError(f"Error: The cannot update qty for {self.product_id.name}.")
+
+		result = super(SaleOrderLine, self.with_context(context)).write(vals)
+		return result

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+	<template id="jys_hide_login_powered_by_odoo" inherit_id="web.login_layout" name="Hide login Powered by Odoo  ">
+		<xpath expr="//div[@class='card-body']//div[last()]" position="replace">
+		</xpath>
+	</template>
+	<template id="jys_hide_login_view_powered_by_odoo" inherit_id="web.login" name="Hide login Powered by Odoo">
+		<xpath expr="//div[@class='justify-content-between mt-2 d-flex small']" position="replace">
+		</xpath>
+		<xpath expr="//button[@class='btn btn-link btn-sm']" position="replace">
+		</xpath>
+	</template>
+</odoo>

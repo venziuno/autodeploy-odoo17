@@ -2170,11 +2170,11 @@ QUnit.module("ActionManager", (hooks) => {
         const webClient = await createWebClient({ serverData });
         await doAction(webClient, 3); // list view
         const titleService = webClient.env.services.title;
-        assert.strictEqual(titleService.current, '{"zopenerp":"Odoo","action":"Partners"}');
+        assert.strictEqual(titleService.current, '{"zopenerp":"Bestindo","action":"Partners"}');
         await click(target.querySelector(".o_data_row .o_data_cell"));
-        assert.strictEqual(titleService.current, '{"zopenerp":"Odoo","action":"First record"}');
+        assert.strictEqual(titleService.current, '{"zopenerp":"Bestindo","action":"First record"}');
         await click(target.querySelector(".o_pager_next"));
-        assert.strictEqual(titleService.current, '{"zopenerp":"Odoo","action":"Second record"}');
+        assert.strictEqual(titleService.current, '{"zopenerp":"Bestindo","action":"Second record"}');
     });
 
     QUnit.test("action part of title is updated when an action is mounted", async (assert) => {
@@ -2187,7 +2187,7 @@ QUnit.module("ActionManager", (hooks) => {
         const webClient = await createWebClient({ serverData });
         await doAction(webClient, 3);
         const titleService = webClient.env.services.title;
-        assert.strictEqual(titleService.current, '{"zopenerp":"Odoo","action":"Partners"}');
+        assert.strictEqual(titleService.current, '{"zopenerp":"Bestindo","action":"Partners"}');
     });
 
     QUnit.test("action group_by of type string", async function (assert) {

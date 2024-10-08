@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <data noupdate="1"> 
-
+        <!-- Roles -->
         <record id="roles_master" model="bp.users.roles">
             <field name="name">Master</field>
             <field name="is_dashboard">True</field>
@@ -45,6 +45,7 @@
             <field name="name">Customer</field>
         </record>
 
+        <!-- Product Service -->
         <record id="discount_product" model="product.product">
             <field name="name">Discount</field>
             <field name="detailed_type">service</field>
@@ -69,6 +70,7 @@
             <field name="lst_price">0.0</field>
         </record>
 
+        <!-- Journal -->
         <record id="deposit_account" model="account.account">
             <field name="name">Deposit</field>
             <field name="account_type">asset_cash</field>
@@ -83,6 +85,21 @@
             <field name="default_account_id" ref="bestindo_custom.deposit_account"/>
         </record>
 
+        <record id="mitra_agen_account" model="account.account">
+            <field name="name">Mitra/Agen</field>
+            <field name="account_type">asset_cash</field>
+            <field name="internal_group">asset</field>
+            <field name="code">1112019</field>
+        </record>
+
+        <record id="mitra_agen_journal" model="account.journal">
+            <field name="name">Mitra/Agen</field>
+            <field name="type">cash</field>
+            <field name="code">MA</field>
+            <field name="default_account_id" ref="bestindo_custom.mitra_agen_account"/>
+        </record>
+
+        <!-- Payment Provider -->
         <record id="deposit_provider" model="payment.provider">
             <field name="name">Deposit</field>
             <field name="state">enabled</field>
@@ -112,5 +129,40 @@
             <field name="is_credit">True</field>
         </record>
 
+        <record id="mitra_agen_provider" model="payment.provider">
+            <field name="name">Mitra/Agen</field>
+            <field name="state">enabled</field>
+            <field name="is_published">True</field>
+            <field name="is_cash">True</field>
+            <field name="bp_journal_id" ref="bestindo_custom.mitra_agen_journal"/>
+        </record>
+        
+        <!-- Delivery -->
+        <record id="reguler_delivery" model="delivery.carrier">
+            <field name="name">Reguler</field>
+            <field name="is_cod">False</field>
+            <field name="product_id" ref="bestindo_custom.ongkir_product"/>
+        </record>
+
+        <record id="pickup_delivery" model="delivery.carrier">
+            <field name="name">Pickup</field>
+            <field name="is_cod">True</field>
+            <field name="pickup_address">Komplek Ruko Taman Kota Mas Blok A3 No. 6-9</field>
+            <field name="product_id" ref="bestindo_custom.ongkir_product"/>
+        </record>
+
+        <!-- Cron Update Role Master -->
+        <record forcecreate="True" id="ir_cron_bp_users_roles" model="ir.cron">
+            <field name="name">Auto set Master Role</field>
+            <field name="model_id" ref="model_bp_users_roles"/>
+            <field name="state">code</field>
+            <field name="code">model.auto_set_master_roles()</field>
+            <field name="active" eval="True"/>
+            <field name="user_id" ref="base.user_root"/>
+            <field name="interval_number">1</field>
+            <field name="interval_type">minutes</field>
+            <field name="numbercall">1</field>
+            <field name="doall" eval="False"/>
+        </record>
     </data>
 </odoo>

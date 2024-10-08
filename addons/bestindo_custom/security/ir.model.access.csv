@@ -16,7 +16,10 @@ access_bp_auth,bp.auth,model_bp_auth,,1,1,1,1
 access_bp_term,bp.term,model_bp_term,,1,1,1,1
 access_bp_cart,bp.cart,model_bp_cart,,1,1,1,1
 
+access_sale_order_line,sale.order.line.public,model_sale_order_line,,1,1,0,0
+
 access_account_payment_register_line,account.payment.register.line,model_account_payment_register_line,,1,1,1,1
+access_invoice_report_pdf,invoice.report.pdf,model_invoice_report_pdf,,1,1,1,1
 
 
 

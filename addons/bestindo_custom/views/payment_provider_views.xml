@@ -56,12 +56,13 @@
                     <field name="is_credit"/>
                     <field name="is_bank"/>
                     <field name="is_cod"/>
+                    <field name="is_cash"/>
                 </xpath>
             </field>
         </record>
 
         <record id="payment.action_payment_provider" model="ir.actions.act_window">
-            <field name="domain">[('code','=','custom')]</field>
+            <field name="domain">[('code','=','custom'),('state','=','enabled')]</field>
         </record>
 
         <record id="bp_payment_provider_kanban" model="ir.ui.view">

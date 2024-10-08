@@ -13,6 +13,7 @@ class PaymentProvider(models.Model):
 	is_credit = fields.Boolean('Credit')
 	is_bank = fields.Boolean('Bank')
 	is_cod = fields.Boolean('COD')
+	is_cash = fields.Boolean('Cash')
 	acc_name = fields.Char('Account Name')
 	acc_number = fields.Char('Account Number')
 	description = fields.Text('Description')

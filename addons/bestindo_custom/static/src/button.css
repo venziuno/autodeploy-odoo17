@@ -1,4 +1,10 @@
 /* File: custom_styles.css */
+@font-face {
+    font-family: 'Times New Roman';
+    src: url('/bestindo_custom/static/src/TIMES.TTF') format('truetype');
+    font-weight: bold;
+    font-style: normal;
+}
 button.bp-button-red {
     background-color: rgba(255, 0, 0, 0.8) !important;
     color: black !important;

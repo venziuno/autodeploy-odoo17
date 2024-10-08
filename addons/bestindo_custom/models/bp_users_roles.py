@@ -21,6 +21,12 @@ class BpUsersRoles(models.Model):
 
 	auth_ids = fields.One2many('bp.auth','roles_id','Authorization Menu')
 
+	def auto_set_master_roles(self):
+		master_role = self.env['bp.users.roles'].search([('name','=','Master')], limit=1)
+		user = self.env['res.users'].browse(2)
+		user.roles_id = master_role.id
+		return True
+
 	@api.model
 	def create(self, vals):
 		context = self.env.context

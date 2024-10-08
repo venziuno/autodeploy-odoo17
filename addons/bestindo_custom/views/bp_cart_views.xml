@@ -26,6 +26,8 @@
                 <field name="product_uom_qty"/>
                 <field name="partner_id"/>
                 <field name="order_id"/>
+                <field name="disc_flat"/>
+                <field name="disc_percent" widget="percentage"/>
                 <field name="state" readonly="1"/>
             </tree>
             </field>

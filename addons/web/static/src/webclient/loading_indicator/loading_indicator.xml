@@ -3,7 +3,13 @@
 
     <t t-name="web.LoadingIndicator">
         <Transition visible="state.show" name="'o-fade'" t-slot-scope="transition" leaveDuration="400">
-            <span class="o_loading_indicator" t-att-class="transition.className">Loading<t t-if="env.debug" t-esc="' (' + state.count + ')'" /></span>
+            <div class="o_loading_overlay">
+                <span t-att-class="transition.className">
+                    <div class="o_loading_indicator"></div>
+                    <t t-if="env.debug" t-esc="' (' + state.count + ')'" />
+                    <div class="o_loading_text">Loading</div>
+                </span>
+            </div>
         </Transition>
     </t>
 

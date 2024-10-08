@@ -5,7 +5,7 @@
             <field name="name">bp.promotion.tree</field>
             <field name="model">bp.promotion</field>
             <field name="arch" type="xml">
-                <tree string="Promotion">
+                <tree string="Promotion" import="0" export_xlsx="0">
                     <field name="image" widget="image" options="{'size': [100, 100]}"/>
                     <field name="name"/>
                     <field name="disc_type"/>

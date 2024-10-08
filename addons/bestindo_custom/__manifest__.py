@@ -35,11 +35,15 @@
 
         'wizard/account_views.xml',
         'wizard/sale_report_analysis_views.xml',
+        'wizard/invoice_report_pdf_views.xml',
 
         'views/bp_menu_views.xml',    
         'views/bp_assets.xml',
         'data/ir_sequence_data.xml',
-        'data/data_roles.xml'
+        'data/data_roles.xml',
+
+        'report/paperformat.xml',
+        'report/report_invoice.xml'
     ],
 
     'license': 'Other proprietary',

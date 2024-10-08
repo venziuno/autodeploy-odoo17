@@ -3,6 +3,8 @@ from odoo import api, fields, models
 import uuid
 from odoo.exceptions import UserError, ValidationError
 from odoo import api, fields, models, tools, _
+from datetime import time, timedelta
+from odoo.tools import float_round
 
 class ProductTemplate(models.Model):
 	_inherit = 'product.template'
@@ -41,6 +43,16 @@ class ProductTemplate(models.Model):
 	@api.model
 	def create(self, vals):
 		context = self.env.context
+		if vals.get('list_price'):
+			if vals.get('list_price') < 0.0 :
+				vals['list_price'] = 0.0
+		if vals.get('flat_point'):
+			if vals.get('flat_point') < 0.0 :
+				vals['flat_point'] = 0.0
+		if vals.get('percent_point'):
+			if vals.get('percent_point') < 0.0 :
+				vals['percent_point'] = 0.0
+
 		result = super(ProductTemplate, self.with_context(context)).create(vals)
 		# if vals.get('upload_product_image_ids'):
 		# 	for x in vals.get('upload_product_image_ids'):
@@ -68,7 +80,7 @@ class ProductTemplate(models.Model):
 						'point_type': 'percent',
 						'percent_point': result.percent_point,
 					})
-
+		
 		if vals.get('list_price'):
 			vals['last_price'] = result.list_price
 
@@ -78,6 +90,16 @@ class ProductTemplate(models.Model):
 		context = self.env.context
 		if vals.get('list_price'):
 			vals['last_price'] = self.list_price
+		if vals.get('list_price'):
+			if vals.get('list_price') < 0.0 :
+				vals['list_price'] = 0.0
+		if vals.get('flat_point'):
+			if vals.get('flat_point') < 0.0 :
+				vals['flat_point'] = 0.0
+		if vals.get('percent_point'):
+			if vals.get('percent_point') < 0.0 :
+				vals['percent_point'] = 0.0
+
 		result = super(ProductTemplate, self.with_context(context)).write(vals)
 		# if vals.get('upload_product_image_ids'):
 		# 	for x in vals.get('upload_product_image_ids'):
@@ -108,6 +130,16 @@ class ProductTemplate(models.Model):
 
 		return result
 
+	def action_bp_open_variants(self):
+		return {
+			'type': 'ir.actions.act_window',
+			'name': 'Product Variants',
+			'res_model': 'product.product',
+			'view_mode': 'tree,form',
+			'domain': [('id','in',self.product_variant_ids.ids)],
+			'target': 'current',
+		}
+
 class ProductProduct(models.Model):
 	_inherit = 'product.product'
 
@@ -136,9 +168,43 @@ class ProductProduct(models.Model):
 	)
 	last_price = fields.Float('Last Price')
 
+	def _compute_sales_count(self):
+		r = {}
+		self.sales_count = 0
+		if not self.user_has_groups('sales_team.group_sale_salesman'):
+			return r
+		date_from = fields.Datetime.to_string(fields.datetime.combine(fields.datetime.now() - timedelta(days=365),
+																	  time.min))
+
+		# done_states = self.env['sale.report']._get_done_states()
+		done_states = ['sale','done']
+
+		domain = [
+			('state', 'in', done_states),
+			('product_id', 'in', self.ids),
+			('date', '>=', date_from),
+		]
+		for product, product_uom_qty in self.env['sale.report']._read_group(domain, ['product_id'], ['product_uom_qty:sum']):
+			r[product.id] = product_uom_qty
+		for product in self:
+			if not product.id:
+				product.sales_count = 0.0
+				continue
+			product.sales_count = float_round(r.get(product.id, 0), precision_rounding=product.uom_id.rounding)
+		return r
+
 	@api.model
 	def create(self, vals):
 		context = self.env.context
+		if vals.get('list_price'):
+			if vals.get('list_price') < 0.0 :
+				vals['list_price'] = 0.0
+		if vals.get('flat_point'):
+			if vals.get('flat_point') < 0.0 :
+				vals['flat_point'] = 0.0
+		if vals.get('percent_point'):
+			if vals.get('percent_point') < 0.0 :
+				vals['percent_point'] = 0.0
 		result = super(ProductProduct, self.with_context(context)).create(vals)
 		# if vals.get('upload_product_var_image_ids'):
 		# 	for x in vals.get('upload_product_var_image_ids'):
@@ -161,6 +227,15 @@ class ProductProduct(models.Model):
 		context = self.env.context
 		if vals.get('list_price'):
 			vals['last_price'] = self.list_price
+		if vals.get('list_price'):
+			if vals.get('list_price') < 0.0 :
+				vals['list_price'] = 0.0
+		if vals.get('flat_point'):
+			if vals.get('flat_point') < 0.0 :
+				vals['flat_point'] = 0.0
+		if vals.get('percent_point'):
+			if vals.get('percent_point') < 0.0 :
+				vals['percent_point'] = 0.0
 		result = super(ProductProduct, self.with_context(context)).write(vals)
 		# if vals.get('upload_product_var_image_ids'):
 		# 	for x in vals.get('upload_product_var_image_ids'):

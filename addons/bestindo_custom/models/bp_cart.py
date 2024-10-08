@@ -12,6 +12,8 @@ class BpCart(models.Model):
 	product_id = fields.Many2one('product.product','Product')
 	product_uom_qty = fields.Float('Quantity')
 	partner_id = fields.Many2one('res.partner','Partner')
+	disc_flat = fields.Float('Discount Flat')
+	disc_percent = fields.Float('Discount Percent')
 	state = fields.Selection('State', related='order_id.state', store=True)
 
 	

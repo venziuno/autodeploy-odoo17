@@ -2,16 +2,16 @@
 import { registry } from "@web/core/registry"
 import { useService } from "@web/core/utils/hooks"
 import { session } from '@web/session';
-const { Component, useRef, onMounted ,useState } = owl
+const { Component, useRef, onMounted, useState } = owl
 
 export class SalesDashboard extends Component {
-//    Extending Component
-    setup(){
+    //    Extending Component
+    setup() {
         this.state = useState({
-            data:{},
-            chart:[],
+            data: {},
+            chart: [],
             lead_customer_data: {},
-            date:{},
+            date: {},
         })
         this.action = useService("action");
         this.LeadCustomer = useRef("LeadCustomer");
@@ -21,51 +21,124 @@ export class SalesDashboard extends Component {
         this.LeastSoldProduct = useRef("LeastSoldProduct");
         this.MonthlyQuotation = useRef("MonthlyQuotation");
         this.orm = useService("orm");
-        onMounted(async()=> {
+
+        onMounted(async () => {
             await this.FetchData();
         })
     }
-    async FetchData(){
-    /* Function for fetching data */
+    async FetchData() {
+        /* Function for fetching data */
         this.state.data = await this.orm.call('sale.order', 'get_data', [])
-        this.state.lead_customer_data = await this.orm.call('sale.order','get_lead_customer', [])
-        this.state.lead_product_data = await this.orm.call( 'sale.order', 'get_lead_product',[])
-        this.state.lead_sale_data = await this.orm.call('sale.order','get_lead_order', [])
-        this.state.lead_sale_team = await this.orm.call('sale.order','get_sales_team', [])
-        this.state.least_sold = await this.orm.call('sale.order','get_least_sold', [])
-        this.state.monthly_comparison = await this.orm.call('sale.order','get_my_monthly_comparison', [])
-        this.chart(this.LeadCustomer.el,'doughnut',Object.keys(this.state.lead_customer_data.lead_templates),Object.values(this.state.lead_customer_data.lead_templates),)
-        this.chart(this.LeadProducts.el,'doughnut',Object.keys(this.state.lead_product_data.lead_templates),Object.values(this.state.lead_product_data.lead_templates),)
-        this.labeled_chart(this.LeadSaleOrders.el,'bar',Object.keys(this.state.lead_sale_data.lead_templates),'Sale Amount',Object.values(this.state.lead_sale_data.lead_templates),)
-        this.chart(this.SalesTeamRevenue.el,'pie',Object.keys(this.state.lead_sale_team.lead_templates),Object.values(this.state.lead_sale_team.lead_templates),)
-        this.labeled_chart(this.LeastSoldProduct.el,'bar',Object.keys(this.state.least_sold.lead_templates),'Product Count',Object.values(this.state.least_sold.lead_templates),)
-        this.labeled_chart(this.MonthlyQuotation.el,'line',Object.keys(this.state.monthly_comparison.lead_templates),'Quotation Count',Object.values(this.state.monthly_comparison.lead_templates),)
+        this.state.lead_customer_data = await this.orm.call('sale.order', 'get_lead_customer', [])
+        this.state.lead_product_data = await this.orm.call('sale.order', 'get_lead_product', [])
+        this.state.lead_sale_data = await this.orm.call('sale.order', 'get_lead_order', [])
+        this.state.lead_sale_team = await this.orm.call('sale.order', 'get_sales_team', [])
+        this.state.least_sold = await this.orm.call('sale.order', 'get_least_sold', [])
+        this.state.monthly_comparison = await this.orm.call('sale.order', 'get_my_monthly_comparison', [])
+
+        this.chart(this.LeadCustomer.el, 'doughnut', Object.keys(this.state.lead_customer_data.lead_templates), Object.values(this.state.lead_customer_data.lead_templates),)
+        this.chart(this.LeadProducts.el, 'doughnut', Object.keys(this.state.lead_product_data.lead_templates), Object.values(this.state.lead_product_data.lead_templates),)
+        this.labeled_chart(this.LeadSaleOrders.el, 'bar', Object.keys(this.state.lead_sale_data.lead_templates), 'Transaction Amount', Object.values(this.state.lead_sale_data.lead_templates),)
+        // this.chart(this.SalesTeamRevenue.el,'pie',Object.keys(this.state.lead_sale_team.lead_templates),Object.values(this.state.lead_sale_team.lead_templates),)
+        this.labeled_chart(this.LeastSoldProduct.el, 'bar', Object.keys(this.state.least_sold.lead_templates), 'Product Count', Object.values(this.state.least_sold.lead_templates),)
+        this.labeled_chart(this.MonthlyQuotation.el, 'line', Object.keys(this.state.monthly_comparison.lead_templates), 'Transaction Count', Object.values(this.state.monthly_comparison.lead_templates),)
     }
-    async DateChanged(){
+    async DateChanged() {
         this.state.data = await this.orm.call('sale.order', 'get_value', [this.state.date.start_date, this.state.date.end_date])
+        this.state.lead_customer_data = await this.orm.call('sale.order', 'get_lead_customer', [this.state.date.start_date, this.state.date.end_date])
+        this.state.lead_product_data = await this.orm.call('sale.order', 'get_lead_product', [this.state.date.start_date, this.state.date.end_date])
+        this.state.lead_sale_data = await this.orm.call('sale.order', 'get_lead_order', [this.state.date.start_date, this.state.date.end_date])
+        this.state.least_sold = await this.orm.call('sale.order', 'get_least_sold', [this.state.date.start_date, this.state.date.end_date])
+        this.state.monthly_comparison = await this.orm.call('sale.order', 'get_my_monthly_comparison', [this.state.date.start_date, this.state.date.end_date])
+
+        if (Chart.getChart(this.LeadCustomer.el)) {
+            Chart.getChart(this.LeadCustomer.el)?.destroy()
+        }
+        this.chart(this.LeadCustomer.el, 'doughnut', Object.keys(this.state.lead_customer_data.lead_templates), Object.values(this.state.lead_customer_data.lead_templates),)
+
+        if (Chart.getChart(this.LeadProducts.el)) {
+            Chart.getChart(this.LeadProducts.el)?.destroy()
+        }
+        this.chart(this.LeadProducts.el, 'doughnut', Object.keys(this.state.lead_product_data.lead_templates), Object.values(this.state.lead_product_data.lead_templates),)
+
+        if (Chart.getChart(this.LeadSaleOrders.el)) {
+            Chart.getChart(this.LeadSaleOrders.el)?.destroy()
+        }
+        this.labeled_chart(this.LeadSaleOrders.el, 'bar', Object.keys(this.state.lead_sale_data.lead_templates), 'Sale Amount', Object.values(this.state.lead_sale_data.lead_templates),)
+
+        if (Chart.getChart(this.LeastSoldProduct.el)) {
+            Chart.getChart(this.LeastSoldProduct.el)?.destroy()
+        }
+        this.labeled_chart(this.LeastSoldProduct.el, 'bar', Object.keys(this.state.least_sold.lead_templates), 'Product Count', Object.values(this.state.least_sold.lead_templates),)
+
+        if (Chart.getChart(this.MonthlyQuotation.el)) {
+            Chart.getChart(this.MonthlyQuotation.el)?.destroy()
+        }
+        this.labeled_chart(this.MonthlyQuotation.el, 'line', Object.keys(this.state.monthly_comparison.lead_templates), 'Transaction Count', Object.values(this.state.monthly_comparison.lead_templates),)
     }
 
-    chart(canvas,type,labels,data){
+    chart(canvas, type, labels, data) {
         this.state.chart.push(new Chart(
             canvas,
             {
-                type:type,
+                type: type,
                 data: {
                     labels: labels,
                     datasets: [
                         {
-                        data: data,
-                        backgroundColor: [
-                            'rgb(255,20,147)',
-                            'rgb(186,85,211)',
-                            'rgb(0,0,255)',
-                            'rgb(0,191,255)',
-                            'rgb(0,206,209)',
-                            'rgb(32,178,170)',
-                            'rgb(173,255,47)',
-                            'rgb(205,92,92)',
-                            'rgb(178,34,34)',
-                            'rgb(0,128,128)',
+                            data: data,
+                            backgroundColor: [
+                                'rgb(255,20,147)',
+                                'rgb(186,85,211)',
+                                'rgb(0,0,255)',
+                                'rgb(0,191,255)',
+                                'rgb(0,206,209)',
+                                'rgb(32,178,170)',
+                                'rgb(173,255,47)',
+                                'rgb(205,92,92)',
+                                'rgb(178,34,34)',
+                                'rgb(0,128,128)',
+                            ],
+                        }
+                    ]
+                },
+                options: {
+                    plugins: {
+                        legend: {
+                            position: 'left',
+                            title: {
+                                display: true,
+                                align: 'start',
+                                position: 'start'
+                            }
+                        },
+                    }
+                }
+            }
+        ))
+    }
+    labeled_chart(canvas, type, labels, label, data) {
+        this.state.chart.push(new Chart(
+            canvas,
+            {
+                type: type,
+                data: {
+                    labels: labels,
+                    datasets: [
+                        {
+                            label: label,
+                            data: data,
+                            backgroundColor: [
+                                'rgb(255,20,147)',
+                                'rgb(186,85,211)',
+                                'rgb(0,0,255)',
+                                'rgb(0,191,255)',
+                                'rgb(0,206,209)',
+                                'rgb(32,178,170)',
+                                'rgb(173,255,47)',
+                                'rgb(205,92,92)',
+                                'rgb(178,34,34)',
+                                'rgb(0,128,128)',
                             ],
                         }
                     ]
@@ -73,37 +146,8 @@ export class SalesDashboard extends Component {
             }
         ))
     }
-    labeled_chart(canvas,type,labels,label,data){
-        this.state.chart.push(new Chart(
-            canvas,
-            {
-                type:type,
-                data: {
-                    labels: labels,
-                    datasets: [
-                        {
-                        label: label,
-                        data: data,
-                        backgroundColor: [
-                            'rgb(255,20,147)',
-                            'rgb(186,85,211)',
-                            'rgb(0,0,255)',
-                            'rgb(0,191,255)',
-                            'rgb(0,206,209)',
-                            'rgb(32,178,170)',
-                            'rgb(173,255,47)',
-                            'rgb(205,92,92)',
-                            'rgb(178,34,34)',
-                            'rgb(0,128,128)',
-                            ],
-                        }
-                    ]
-                },
-            }
-        ))
-    }
-    on_dashboard_quotation_action(){
-    /* Function for quotation dashboard */
+    on_dashboard_quotation_action() {
+        /* Function for quotation dashboard */
         if (this.state.date.start_date && this.state.date.end_date) {
             var domain = [['user_id', '=', session.uid], ['state', '=', 'draft'], ['date_order', '>=', this.state.date.start_date], ['date_order', '<=', this.state.date.end_date]]
         }
@@ -125,19 +169,19 @@ export class SalesDashboard extends Component {
             domain: domain,
         });
     }
-    on_dashboard_my_sale_order_action(){
-    /* Function for Sale order dashboard */
+    on_dashboard_my_sale_order_action() {
+        /* Function for Sale order dashboard */
         if (this.state.date.start_date && this.state.date.end_date) {
-            var domain = [['user_id', '=', session.uid], ['state', '=', 'sale'], ['date_order', '>=', this.state.date.start_date], ['date_order', '<=', this.state.date.end_date]]
+            var domain = [['state', '!=', 'cancel'], ['date_order', '>=', this.state.date.start_date], ['date_order', '<=', this.state.date.end_date]]
         }
         else if (this.state.date.start_date) {
-            var domain = [['user_id', '=', session.uid], ['state', '=', 'sale'], ['date_order', '>=', this.state.date.start_date]]
+            var domain = [['state', '!=', 'cancel'], ['date_order', '>=', this.state.date.start_date]]
         }
         else if (this.state.date.end_date) {
-            var domain = [['user_id', '=', session.uid], ['state', '=', 'sale'], ['date_order', '<=', this.state.date.end_date]]
+            var domain = [['state', '!=', 'cancel'], ['date_order', '<=', this.state.date.end_date]]
         }
         else {
-            var domain = [['user_id', '=', session.uid], ['state', '!=', 'cancel']]
+            var domain = [['state', '!=', 'cancel']]
         }
         return this.action.doAction({
             type: "ir.actions.act_window",
@@ -148,8 +192,8 @@ export class SalesDashboard extends Component {
             domain: domain,
         });
     }
-    on_dashboard_quotation_sent_action(){
-    /* Function for Quotation sent dashboard */
+    on_dashboard_quotation_sent_action() {
+        /* Function for Quotation sent dashboard */
         if (this.state.date.start_date && this.state.date.end_date) {
             var domain = [['user_id', '=', session.uid], ['state', '=', 'sent'], ['date_order', '>=', this.state.date.start_date], ['date_order', '<=', this.state.date.end_date]]
         }
@@ -171,9 +215,9 @@ export class SalesDashboard extends Component {
             domain: domain,
         });
     }
-    on_dashboard_quotation_cancel_action(){
-    /* Function for Quotation Cancel dashboard */
-        var domain = [['user_id', '=', session.uid], ['state', '=', 'cancel']]
+    on_dashboard_quotation_cancel_action() {
+        /* Function for Quotation Cancel dashboard */
+        var domain = [['state', '=', 'cancel']]
         return this.action.doAction({
             type: "ir.actions.act_window",
             name: 'Transaction Cancel',
@@ -183,9 +227,9 @@ export class SalesDashboard extends Component {
             domain: domain,
         });
     }
-    on_dashboard_customers_action(){
-    /* Function for Customers dashboard */
-        var domain = [['user_type', '=', 'customer'],['is_another_address','=',false]]
+    on_dashboard_customers_action() {
+        /* Function for Customers dashboard */
+        var domain = [['user_type', '=', 'customer'], ['is_another_address', '=', false], ['id', 'not in', [1, 3]]]
         return this.action.doAction({
             type: 'ir.actions.act_window',
             name: 'Customers',
@@ -195,8 +239,8 @@ export class SalesDashboard extends Component {
             domain: domain,
         });
     }
-    on_dashboard_products_action(){
-    /* Function for Products dashboard */
+    on_dashboard_products_action() {
+        /* Function for Products dashboard */
         var domain = [['detailed_type', '!=', 'service']]
         return this.action.doAction({
             type: 'ir.actions.act_window',
@@ -207,8 +251,8 @@ export class SalesDashboard extends Component {
             domain: domain,
         });
     }
-    on_dashboard_to_invoice_action(){
-    /* Function for To invoice dashboard */
+    on_dashboard_to_invoice_action() {
+        /* Function for To invoice dashboard */
         if (this.state.date.start_date && this.state.date.end_date) {
             var domain = [['user_id', '=', session.uid], ['invoice_status', '=', 'to invoice'], ['date_order', '>=', this.state.date.start_date], ['date_order', '<=', this.state.date.end_date]]
         }

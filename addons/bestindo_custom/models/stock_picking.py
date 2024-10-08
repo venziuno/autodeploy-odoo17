@@ -20,6 +20,21 @@ class StockPicking(models.Model):
 	recipient_name = fields.Char('Recipient')
 	transaction_count = fields.Integer(compute="_compute_transaction_count", string='Sale Order Count')
 
+	@api.model
+	def default_get(self, fields):
+		result = super(StockPicking, self).default_get(fields)
+		location_id = self.env['stock.location'].search([('name','=','Stock')], limit=1, order='id desc')
+		if location_id:
+			result['location_id'] = location_id.id
+		location_dest_id = self.env['stock.location'].search([('name','=','Customers')], limit=1, order='id desc')
+		if location_dest_id:
+			result['location_dest_id'] = location_dest_id.id
+		picking_type_id = self.env['stock.picking.type'].search([('name','=','Delivery Orders'),('code','=','outgoing')], limit=1, order='id desc')
+		if picking_type_id:
+			result['picking_type_id'] = picking_type_id.id
+		
+		return result
+	
 	@api.depends('sale_id')
 	def _compute_transaction_count(self):
 		for pick in self:
@@ -110,4 +125,27 @@ class StockPicking(models.Model):
 			result['res_id'] = source_orders.id
 		else:
 			result = {'type': 'ir.actions.act_window_close'}
+		return result
+
+class StockMove(models.Model):
+	_inherit = 'stock.move'
+
+	@api.model_create_multi
+	def create(self, vals_list):
+		for vals in vals_list:
+			product_uom = self.env['uom.uom'].browse(int(vals.get('product_uom')))
+			if vals.get('product_uom_qty'):
+				if vals.get('product_uom_qty') < product_uom.rounding:
+					raise UserError(f"{vals.get('name')}\nCan't set Demand less than [{product_uom.rounding}] Rounding Precision on Unit: {product_uom.name}")
+		result = super(StockMove, self).create(vals_list)
+		return result
+
+	def write(self, vals):
+		if vals.get('product_uom_qty'):
+			if vals.get('product_uom_qty') < self.product_uom.rounding:
+				raise UserError(f"{self.name}\nCan't set Demand less than [{self.product_uom.rounding}] Rounding Precision on Unit: {self.product_uom.name}")
+		if vals.get('quantity'):
+			if vals.get('quantity') < self.product_uom.rounding:
+				raise UserError(f"{self.name}\nCan't set Quantity less than [{self.product_uom.rounding}] Rounding Precision on Unit: {self.product_uom.name}")
+		result = super(StockMove, self).write(vals)
 		return result

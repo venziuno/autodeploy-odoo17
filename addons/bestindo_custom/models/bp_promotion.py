@@ -3,6 +3,7 @@ from odoo import api, fields, models
 import uuid
 from odoo.exceptions import UserError, ValidationError
 from odoo import api, fields, models, tools, _
+from datetime import datetime, timedelta
 
 class BpPromotion(models.Model):
 	_name = 'bp.promotion'
@@ -46,6 +47,9 @@ class BpPromotion(models.Model):
 				promotion_id = self.search([('is_all_product','=',True)])
 				if promotion_id:
 					raise ValidationError(_(f'Apply to All Product sudah digunakan pada Promotion [{promotion_id.name}]'))
+		if vals.get('start_date') and vals.get('end_date'):
+			if vals.get('start_date') > vals.get('end_date'):
+				raise ValidationError(_('Start Date must be earlier than or equal to End Date'))
 		result = super(BpPromotion, self.with_context(context)).create(vals)
 		return result
 
@@ -56,6 +60,17 @@ class BpPromotion(models.Model):
 				promotion_id = self.search([('is_all_product','=',True)])
 				if promotion_id:
 					raise ValidationError(_(f'Apply to All Product sudah digunakan pada Promotion [{promotion_id.name}]'))
+					
+		start_date = vals.get('start_date')
+		if start_date:
+			start_date = vals.get('start_date') or self.start_date.strftime('%Y-%m-%d %H:%M:%S')
+		end_date = vals.get('end_date')
+		if end_date:
+			end_date = vals.get('end_date') or self.end_date.strftime('%Y-%m-%d %H:%M:%S')
+
+		if start_date and end_date:
+			if start_date > end_date:
+				raise ValidationError(_('Start Date must be earlier than or equal to End Date'))
 		result = super(BpPromotion, self.with_context(context)).write(vals)
 		return result
 

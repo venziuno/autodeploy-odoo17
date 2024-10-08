@@ -26,6 +26,8 @@
                 <xpath expr="//field[@name='delivery_type']" position="before">
                     <group>
                         <field name="is_cod" string="Pickup"/>
+                        <field name="pickup_address" required="is_cod == True" invisible="is_cod == False" placeholder="Address Shop/Warehouse"/>
+                        <!-- <field name="address_type" required="is_cod == True" invisible="is_cod == False"/> -->
                     </group>
                 </xpath>
                 <xpath expr="//field[@name='delivery_type']" position="attributes">
@@ -50,7 +52,7 @@
                     <attribute name="invisible">1</attribute>
                 </xpath>
                 <xpath expr="//page[@name='destination']" position="before">
-                    <page string="Ongkir">
+                    <page string="Ongkir" invisible="is_cod == True">
                         <field name="ongkir_ids">
                             <tree editable="bottom">
                                 <field name="total_from"/>

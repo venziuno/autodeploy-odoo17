@@ -1,0 +1,279 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <template id="account.report_invoice_document">
+            <t t-call="web.basic_layout">
+                <t t-set="page_count" t-value="0" />
+                <t t-set="o" t-value="o.with_context(lang=lang)" />
+                <t t-set="values" t-value="o.get_inv_line()" />
+                <t t-set="page_count" t-value="page_count + 1" />
+                <style>
+                    @font-face {
+                        font-family: 'Times New Roman';
+                        src: url('/bestindo_custom/static/src/TIMES.TTF') format('truetype');
+                        font-weight: bold;
+                        font-style: normal;
+                    }
+                    .table-cust{
+                        width: 65%;
+                    }
+                    .table-inv{
+                        width: 30%;
+                        margin-left: 20px
+                    }
+                    .table-cust-in{
+                        width: 100%;
+                        padding-bottom: 15px;
+                        border: 0px solid transparent
+                    }
+                    .cust-col-1{
+                        width: 13%
+                    }
+                    .cust-col-2{
+                        width: 2%
+                    }
+                    .cust-col-3{
+                        width: 85%
+                    }
+                    .inv-col-1{
+                        width: 35%
+                    }
+                    .inv-col-2{
+                        width: 2%
+                    }
+                    .inv-col-3{
+                        width: 63%
+                    }
+                </style>
+                <div t-attf-class="page #{'page-' + str(page_count)}">
+                <t t-if="o.partner_id">
+                    <div t-attf-class="bestindo-content #{'bestindo-content-' + str(page_count)}">
+                    <div class="container">
+                        <div class="row">
+                            <div class="col-sm-8 table-cust">
+                                <table class="table-cust-in">
+                                    <tr style="border-right: 1px solid black">
+                                        <td class="cust-col-1" style="border: 0px solid transparent">Customer</td>
+                                        <td class="cust-col-2" style="border: 0px solid transparent">:</td>
+                                        <td class="cust-col-3"><b><t t-esc="values['customer']"/> (<t t-esc="values['customer_id']"/>)</b></td>
+                                    </tr>
+                                    <tr style="border-right: 1px solid black">
+                                        <td style="border: 0px solid transparent"></td>
+                                        <td style="border: 0px solid transparent"></td>
+                                        <td>--</td>
+                                    </tr>
+                                    <tr style="height: 40px;border-bottom: 1px solid black;border-right: 1px solid black">
+                                        <td style="border: 0px solid transparent"></td>
+                                        <td style="border: 0px solid transparent"></td>
+                                        <td>Tel:&#160;&#160;&#160;<t t-esc="values['phone']"/>&#160;&#160;&#160;Fax: </td>
+                                    </tr>
+                                    <tr>
+                                        <td></td>
+                                        <td></td>
+                                        <td style="font-size: 30px;font-weight: bold;text-align: right;font-family: 'Times New Roman';padding-top: 5px">TOKO</td>
+                                    </tr>
+                                    <tr>
+                                        <td></td>
+                                        <td></td>
+                                        <td style="text-align: right;padding-right: 7px;padding-top: 30px">Page :&#160;&#160;<t t-esc="page_count"/>/<t t-esc="len(docs)"/></td>
+                                        <!-- <td style="text-align: right;padding-right: 7px;padding-top: 30px">Page :&#160;&#160;<span class="page"/>/<span class="topage"/></td> -->
+                                    </tr>
+                                </table>
+                            </div>
+
+                            <div class="col-sm-4 table-inv">
+                                <table style="width: 100%;border: 0px solid transparent;line-height: 1.2">
+                                    <tr>
+                                        <td colspan="3" style="font-size: 25px;font-family: 'Times New Roman';"><u><b>INVOICE</b></u></td>
+                                    </tr>
+                                    <tr>
+                                        <td colspan="3" style="font-size: 18px;font-family: 'Times New Roman';"><b><t t-esc="values['invoice_no']"/></b></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="inv-col-1">No. PO</td>
+                                        <td class="inv-col-2">:</td>
+                                        <td class="inv-col-3">&#160;&#160;<t t-esc="values['no_po']"/></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Date</td>
+                                        <td>:</td>
+                                        <td>&#160;&#160;<t t-esc="values['date']"/></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Salesman</td>
+                                        <td>:</td>
+                                        <td>&#160;&#160;</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Term</td>
+                                        <td>:</td>
+                                        <td>&#160;&#160;<t t-esc="values['term']"/></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Currency</td>
+                                        <td>:</td>
+                                        <td>&#160;&#160;<t t-esc="values['currency']"/></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Log No</td>
+                                        <td>:</td>
+                                        <td>&#160;&#160;<t t-esc="values['no_log']"/></td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <p>Order by&#160;&#160;:&#160;&#160;</p>
+                        <table style="width: 100%;border-bottom: 1px solid black">
+                            <tr style="text-align:center">
+                                <th style="border: 1px solid black;width: 5%">NO.</th>
+                                <th style="border: 1px solid black;width: 40%">DESCRIPTION</th>
+                                <th style="border: 1px solid black;width: 10%">QTY</th>
+                                <th style="border: 1px solid black;width: 10%">PRICE</th>
+                                <th style="border: 1px solid black;width: 10%">DISC %</th>
+                                <th style="border: 1px solid black;width: 10%">DISCOUNT</th>
+                                <th style="border: 1px solid black;width: 15%">NET AMOUNT</th>
+                            </tr>
+
+                            <t t-set="number" t-value="1" />
+                            <t t-foreach="values['line']" t-as="line">
+                                <tr style="border: 0px solid transparent">
+                                    <td style="text-align:center"><t t-esc="number" /></td>
+                                    <td><t t-esc="line['name']" /></td>
+                                    <td style="text-align:center">
+                                        <t t-esc="line['qty']"/>&#160;&#160;&#160;&#160;<t t-esc="line['uom']"/>
+                                    </td>
+                                    <td style="text-align:right"><t t-esc="line['price']"/></td>
+                                    <td style="text-align:right"><t t-esc="line['disc_percent']"/></td>
+                                    <td style="text-align:right"><t t-esc="line['disc_flat']"/></td>
+                                    <td style="text-align:right"><t t-esc="line['total']"/></td>
+                                </tr>
+                                <t t-set="number" t-value="number + 1" />
+                            </t>
+                            <tr style="border: 0px solid transparent">
+                                <td></td>
+                                <td>--</td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                            </tr>
+                        </table>
+                    </div>
+
+                    <div t-attf-class="bestindo-footer #{'bestindo-footer-' + str(page_count)}">
+                    <div>
+                        <div class="row">
+                            <div class="col-sm-8" style="width: 60%;font-size: 15px">
+                                <p style="line-height: 1.2">
+                                    Barang telah diterima dengan baik dan cukup. Pembayaran dg Transfer/Giro:<br/>
+                                    <t t-if="values['bank_name']">
+                                        <t t-esc="values['bank_acc_name']"/>, <t t-esc="values['bank_name']"/>: <t t-esc="values['bank_acc_number']"/><br/>
+                                    </t>
+                                    <t t-else="">
+                                        PT.BESTINDO PERSADA, BCA: 852 066 1515<br/>
+                                    </t>
+                                    dan dianggap sah bila telah diterima oleh bank kami.<br/>
+                                    
+                                </p>
+                            </div>
+                            <div class="col-sm-4" style="width: 40%">
+                                <table style="width: 100%;font-weight: bold;font-size: 18px;border: 0px solid transparent">
+                                    <tr>
+                                        <td style="text-align: right">Total&#160;&#160;</td>
+                                        <td>:</td>
+                                        <td style="text-align: center"><t t-esc="values['currency']"/></td>
+                                        <td style="text-align: right"><t t-esc="values['amount_total']"/></td>
+                                    </tr>
+
+                                    <t t-if="values['ongkir'] &gt; 0">
+                                        <tr>
+                                            <td style="text-align: right">Ongkir&#160;&#160;</td>
+                                            <td>:</td>
+                                            <td style="text-align: center"><t t-esc="values['currency']"/></td>
+                                            <td style="text-align: right"><t t-esc="values['ongkir']"/></td>
+                                        </tr>
+                                    </t>
+
+                                    <tr>
+                                        <td style="text-align: right">Disc&#160;&#160;</td>
+                                        <td>:</td>
+                                        <td style="text-align: center"><t t-esc="values['currency']"/></td>
+                                        <td style="text-align: right"><t t-esc="values['discount']"/></td>
+                                    </tr>
+                                    
+                                    <t t-if="values['point'] &gt; 0">
+                                        <tr>
+                                            <td style="text-align: right">Point&#160;&#160;</td>
+                                            <td>:</td>
+                                            <td style="text-align: center"><t t-esc="values['currency']"/></td>
+                                            <td style="text-align: right"><t t-esc="values['point']"/></td>
+                                        </tr>
+                                    </t>
+
+                                    <tr>
+                                        <td style="text-align: right">Grand Total&#160;&#160;</td>
+                                        <td>:</td>
+                                        <td style="text-align: center"><t t-esc="values['currency']"/></td>
+                                        <td style="text-align: right;"><t t-esc="values['grand_total']"/></td>
+                                    </tr>
+                                </table>
+                                <p style="border-top: 1px solid black;width: 65%;margin-left: 120px;margin-top: 5px"/>
+                            </div>
+                        </div>
+                    </div>
+                    </div>
+                    <div>
+                        <table style="width: 100%;margin-top: 20px;border: 0px solid transparent">
+                            <tr style="text-align: center">
+                                <td style="width: 33%;line-height: 1.1;vertical-align: middle;">Received in Good<br/>conditions by,</td>
+                                <td style="width: 33%;vertical-align: middle;">Delivered By,</td>
+                                <td style="width: 34%;vertical-align: middle;">Admin</td>
+                            </tr>
+                            <tr style="text-align: center">
+                                <td style="padding-top: 35px">(_________________________)</td>
+                                <td style="padding-top: 35px">(_________________________)</td>
+                                <td style="padding-top: 35px">(_________________________)</td>
+                            </tr>
+                            <tr style="text-align: center">
+                                <td>Name &amp; Date</td>
+                                <td></td>
+                                <td><t t-esc="values['print_date']"/></td>
+                            </tr>
+                        </table>
+                    </div>
+                    </div>
+
+                <p t-if="len(docs) &gt; page_count" style="page-break-after: always" />
+                </t>
+                </div>
+                <div id="right-elements" class="oe_hidden"> 
+                    HIDE
+                </div>
+                <!-- <script>
+                    var paperHeight = 140;
+                    var reportPages = document.getElementsByClassName('page');
+                    var bestindoFooters = document.getElementsByClassName('bestindo-footer');
+                    var bestindoContents = document.getElementsByClassName('bestindo-content');
+
+                    Array.prototype.forEach.call(reportPages, function(reportPage, index) {
+                        var bestindoFooter = bestindoFooters[index];
+                        var bestindoContent = bestindoContents[index];
+
+                        var pageHeight = reportPage.offsetHeight;
+                        var contentHeight = bestindoContent.offsetHeight;
+                        var footerHeight = bestindoFooter.offsetHeight;
+
+                        var remainingSpace = pageHeight - (contentHeight + footerHeight);
+                        var additionalPagesNeeded = Math.ceil((contentHeight + footerHeight) / pageHeight);
+                        console.log('additionalPagesNeeded', additionalPagesNeeded);
+                        reportPage.style.height = (paperHeight * additionalPagesNeeded) + 'mm';
+                    });
+                </script> -->
+            </t>
+        </template>
+    </data>
+</odoo>

@@ -47,6 +47,16 @@ class ResPartner(models.Model):
 	driver_no = fields.Char('No. Plat Kendaraan')
 	driver_color = fields.Char('Warna Kendaraan')
 
+	customer_id = fields.Char('Customer ID',compute='_compute_customer_id', store=True)
+
+	@api.depends('name','user_ids')
+	def _compute_customer_id(self):
+		for rec in self:
+			if rec.user_ids:
+				rec.customer_id = f"ID{rec.create_date.strftime('%y%m')}000{rec.user_ids[0].id}"
+			else:
+				rec.customer_id = False
+	
 	def _compute_total_deposit(self):
 		for rec in self:
 			deposit_ids = self.env['bp.deposit'].search([('partner_id','=',rec.id),('state','in',['done','used'])])
@@ -243,6 +253,16 @@ class ResPartner(models.Model):
 				'roles_id': roles_id.id,
 			})
 		return True
+
+	def change_password_users(self):
+		if not self.user_ids:
+			raise ValidationError('Please create users first.')
+		if not self.password:
+			raise ValidationError('Please set the password.')
+		user_id = self.user_ids
+		user_id.write({'password': self.password})
+		return True
+
 
 	def _full_address(self):
 		for record in self:

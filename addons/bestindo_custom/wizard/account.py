@@ -7,7 +7,7 @@ from datetime import datetime
 class AccountPaymentRegister(models.TransientModel):
 	_inherit = 'account.payment.register'
 
-	register_line_ids = fields.One2many('account.payment.register.line','register_id','Register Line')
+	register_line_ids = fields.One2many('account.payment.register.line','register_id','Journal or Date')
 
 	def action_create_payments(self):
 		context = self.env.context
@@ -17,7 +17,6 @@ class AccountPaymentRegister(models.TransientModel):
 			raise UserError(_(f"Membayar lebih dari Rp {move.amount_residual_signed}."))
 
 		payments = self._create_payments()
-
 		for pay in payments:
 			pay.write({'invoice_id':move.id})
 
@@ -80,6 +79,9 @@ class AccountPaymentRegister(models.TransientModel):
 		if self._context.get('dont_redirect_to_payments'):
 			return True
 
+		if self._context.get('create_payment_from_api'):
+			return True
+		
 		action = {
 			'name': _('Payments'),
 			'type': 'ir.actions.act_window',
