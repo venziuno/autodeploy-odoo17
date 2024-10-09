@@ -47,7 +47,7 @@ Setup odoo in kube
 	# the .NodeRegistration.KubeletExtraArgs object in the configuration files instead. KUBELET_EXTRA_ARGS should be sourced from this file.
 	EnvironmentFile=-/etc/default/kubelet
 	ExecStart=
-	ExecStart=/usr/local/bin/kubelet $KUBELET_KUBECONFIG_ARGS $KUBELET_CONFIG_ARGS $KUBELET_KUBEADM_ARGS $KUBELET_EXTRA_ARGS
+	ExecStart=/usr/bin/kubelet $KUBELET_KUBECONFIG_ARGS $KUBELET_CONFIG_ARGS $KUBELET_KUBEADM_ARGS $KUBELET_EXTRA_ARGS
 24. sudo kubeadm init --control-plane-endpoint=ip:6443 --pod-network-cidr=192.168.0.0/16
 25. mkdir -p $HOME/.kube sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config sudo chown $(id -u):$(id -g) $HOME/.kube/config
 26  kubectl apply -f https://docs.projectcalico.org/manifests/calico.yaml
